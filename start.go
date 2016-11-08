@@ -1,12 +1,15 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"math/rand"
+)
 
 func main() {
 	fmt.Println("mub")
 }
 
-type Airstream byte
+type Airstream int
 
 const (
 	NoAirstream Airstream = iota
@@ -14,7 +17,7 @@ const (
 	Ingressive
 )
 
-type Initiation byte
+type Initiation int
 
 const (
 	NoInitiation Initiation = iota
@@ -23,7 +26,7 @@ const (
 	Lingual
 )
 
-type ObstructionPoint byte
+type ObstructionPoint int
 
 const (
 	NoObstructionPoint ObstructionPoint = iota
@@ -39,7 +42,7 @@ const (
 	Glottal
 )
 
-type Manner byte
+type Manner int
 
 const (
 	Stop Manner = iota
@@ -56,7 +59,7 @@ const (
 	Open
 )
 
-type Voice byte
+type Voice int
 
 const (
 	Voiceless Voice = iota
@@ -66,7 +69,7 @@ const (
 	Closed
 )
 
-type Shape byte
+type Shape int
 
 const (
 	Central Shape = iota
@@ -230,4 +233,47 @@ func (sound Sound) Soundless() bool {
 		return true
 	}
 	return false
+}
+
+func RandomSound(egressive bool, pulmonic bool) Sound {
+	sound := new(Sound)
+	sound.randomiseSound(egressive, pulmonic, rand.Intn(5))
+	for sound.IsValid() {
+		sound.randomiseSound(egressive, pulmonic, rand.Intn(5))
+	}
+	return *sound
+}
+
+func (sound *Sound) randomiseSound(egressive bool, pulmonic bool, part int) {
+	if egressive {
+		sound.Airstream = Egressive
+	} else {
+		sound.Airstream = Airstream(rand.Intn(3))
+	}
+	if pulmonic {
+		sound.Initiation = Pulmonic
+	} else {
+		sound.Initiation = Initiation(rand.Intn(4))
+	}
+	sound.GlottalArticulation.Voice = Voice(rand.Intn(5))
+
+	switch part {
+	case 0:
+		sound.LabialArticulation.ObstructionPoint = ObstructionPoint(rand.Intn(11))
+		sound.LabialArticulation.Manner = Manner(rand.Intn(12))
+		sound.LabialArticulation.Rounded = rand.Intn(2) == 0
+	case 1:
+		sound.CoronalArticulation.ObstructionPoint = ObstructionPoint(rand.Intn(11))
+		sound.CoronalArticulation.Manner = Manner(rand.Intn(12))
+		sound.CoronalArticulation.Shape = Shape(rand.Intn(3))
+	case 2:
+		sound.DorsalArticulation.ObstructionPoint = ObstructionPoint(rand.Intn(11))
+		sound.DorsalArticulation.Manner = Manner(rand.Intn(12))
+		sound.DorsalArticulation.Centralised = rand.Intn(2) == 0
+	case 3:
+		sound.RadicalArticulation.ObstructionPoint = ObstructionPoint(rand.Intn(11))
+		sound.RadicalArticulation.Manner = Manner(rand.Intn(12))
+	case 4:
+		sound.GlottalArticulation.Voice = Closed
+	}
 }
