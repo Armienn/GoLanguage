@@ -6,7 +6,30 @@ import (
 )
 
 func main() {
-	fmt.Println("mub")
+	sound := RandomSound(false, true)
+	fmt.Println(sound.ShortenedRepresentation())
+	sound = RandomSound(false, true)
+	fmt.Println(sound.ShortenedRepresentation())
+	sound = RandomSound(false, true)
+	fmt.Println(sound.ShortenedRepresentation())
+	sound = RandomSound(false, true)
+	fmt.Println(sound.ShortenedRepresentation())
+	sound = RandomSound(false, true)
+	fmt.Println(sound.ShortenedRepresentation())
+	sound = RandomSound(false, true)
+	fmt.Println(sound.ShortenedRepresentation())
+	sound = RandomSound(false, true)
+	fmt.Println(sound.ShortenedRepresentation())
+	sound = RandomSound(false, true)
+	fmt.Println(sound.ShortenedRepresentation())
+	sound = RandomSound(false, true)
+	fmt.Println(sound.ShortenedRepresentation())
+	sound = RandomSound(false, true)
+	fmt.Println(sound.ShortenedRepresentation())
+	sound = RandomSound(false, true)
+	fmt.Println(sound.ShortenedRepresentation())
+	sound = RandomSound(false, true)
+	fmt.Println(sound.ShortenedRepresentation())
 }
 
 type Airstream int
@@ -276,4 +299,138 @@ func (sound *Sound) randomiseSound(egressive bool, pulmonic bool, part int) {
 	case 4:
 		sound.GlottalArticulation.Voice = Closed
 	}
+}
+
+func (sound *Sound) ShortenedRepresentation() string {
+	representation := ""
+	if sound.Airstream == Ingressive {
+		representation += ">"
+	}
+	if sound.Initiation == Glottalic {
+		representation += "?"
+	} else if sound.Initiation == Lingual {
+		representation += "/"
+	}
+
+	if sound.LabialArticulation.ObstructionPoint != NoObstructionPoint {
+		representation += "m" + CharacterFromObstructionPoint(sound.LabialArticulation.ObstructionPoint) + CharacterFromManner(sound.LabialArticulation.Manner)
+	}
+	if sound.CoronalArticulation.ObstructionPoint != NoObstructionPoint {
+		representation += "n" + CharacterFromShape(sound.CoronalArticulation.Shape) + CharacterFromObstructionPoint(sound.CoronalArticulation.ObstructionPoint) + CharacterFromManner(sound.CoronalArticulation.Manner)
+	}
+	if sound.DorsalArticulation.ObstructionPoint != NoObstructionPoint {
+		representation += "ŋ" + CharacterFromCentralisation(sound.DorsalArticulation.Centralised) + CharacterFromObstructionPoint(sound.DorsalArticulation.ObstructionPoint) + CharacterFromManner(sound.DorsalArticulation.Manner)
+	}
+	if sound.RadicalArticulation.ObstructionPoint != NoObstructionPoint {
+		representation += "ʕ" + CharacterFromObstructionPoint(sound.RadicalArticulation.ObstructionPoint) + CharacterFromManner(sound.RadicalArticulation.Manner)
+	}
+	//if (glottalArticulation.Point != ObstructionPoint.None)
+	//	representation += "h" + CharacterFrom(glottalArticulation.Point) + CharacterFrom(glottalArticulation.Manner);
+
+	representation += CharacterFromVoice(sound.GlottalArticulation.Voice)
+	representation += CharacterFromRoundedness(sound.LabialArticulation.Rounded) //  ̹
+
+	return representation
+}
+
+func CharacterFromVoice(voice Voice) string {
+	switch voice {
+	case Voiceless:
+		return "\u0325" // ̥
+	case Breathy:
+		return "\u0324" // ̤
+	case Modal:
+		return ""
+	case Creaky:
+		return "\u0331" // ̰
+	case Closed:
+		return "ʔ"
+	default:
+		return "E"
+	}
+}
+
+func CharacterFromShape(shape Shape) string {
+	switch shape {
+	case Central:
+		return ""
+	case Lateral:
+		return "\u02E1" //superscript l
+	case Sibilant:
+		return "\u02E2" //superscript s
+	default:
+		return "E"
+	}
+}
+
+func CharacterFromRoundedness(rounded bool) string {
+	if rounded {
+		return "\u0339"
+	}
+	return ""
+}
+
+func CharacterFromCentralisation(centralised bool) string {
+	if centralised {
+		return "¨"
+	}
+	return ""
+}
+
+func CharacterFromObstructionPoint(point ObstructionPoint) string {
+	switch point {
+	case Labial:
+		return "l"
+	case Dental:
+		return "d"
+	case Alveolar:
+		return "a"
+	case PostAlveolar:
+		return "o"
+	case Palatal:
+		return "p"
+	case Velar:
+		return "v"
+	case Uvular:
+		return "u"
+	case Pharyngeal:
+		return "h"
+	case Epiglottal:
+		return "e"
+	case Glottal:
+		return "g"
+	default:
+		return "E"
+	} //{ None, Labial, Dental, Alveolar, PostAlveolar, Palatal, Velar, Uvular, Pharyngeal, Epiglottal, Glottal }
+}
+
+func CharacterFromManner(manner Manner) string {
+	switch manner {
+	case Stop:
+		return "P"
+	case Tap:
+		return "T"
+	case Trill:
+		return "R"
+	case Fricative:
+		return "F"
+	case Approximant:
+		return "W"
+	case Close:
+		return "\"`"
+	case NearClose:
+		return "``"
+	case CloseMid:
+		return "`"
+	case Mid:
+		return "'"
+	case OpenMid:
+		return "´"
+	case NearOpen:
+		return "´´"
+	case Open:
+		return "´\""
+	default:
+		return "E"
+	} //{ Stop, Tap, Trill, Fricative, Approximant, Close, NearClose, CloseMid, Mid, OpenMid, NearOpen, Open }
 }
