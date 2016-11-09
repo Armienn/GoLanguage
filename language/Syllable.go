@@ -13,7 +13,7 @@ func RandomSyllable(language *Language) Syllable {
 	iterations := 0 //for checking that we don't end up in an eternal loop
 	//first choose a random pattern concerning nucleus
 	pattern := language.Patterns[rand.Intn(len(language.Patterns))]
-	for pattern.NucleusPatterns == nil || len(pattern.NucleusPatterns) == 0 {
+	for pattern.NucleusPatterns == nil {
 		pattern = language.Patterns[rand.Intn(len(language.Patterns))]
 	}
 	//choose sounds that fit the pattern
