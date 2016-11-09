@@ -8,6 +8,28 @@ import (
 func main() {
 	sound := RandomSound(false, true)
 	fmt.Println(sound.ShortenedRepresentation())
+	sound = RandomSound(false, true)
+	fmt.Println(sound.ShortenedRepresentation())
+	sound = RandomSound(false, true)
+	fmt.Println(sound.ShortenedRepresentation())
+	sound = RandomSound(false, true)
+	fmt.Println(sound.ShortenedRepresentation())
+	sound = RandomSound(false, true)
+	fmt.Println(sound.ShortenedRepresentation())
+	sound = RandomSound(false, true)
+	fmt.Println(sound.ShortenedRepresentation())
+	sound = RandomSound(false, true)
+	fmt.Println(sound.ShortenedRepresentation())
+	sound = RandomSound(false, true)
+	fmt.Println(sound.ShortenedRepresentation())
+	sound = RandomSound(false, true)
+	fmt.Println(sound.ShortenedRepresentation())
+	sound = RandomSound(false, true)
+	fmt.Println(sound.ShortenedRepresentation())
+	sound = RandomSound(false, true)
+	fmt.Println(sound.ShortenedRepresentation())
+	sound = RandomSound(false, true)
+	fmt.Println(sound.ShortenedRepresentation())
 }
 
 type Airstream int
