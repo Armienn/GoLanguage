@@ -1,6 +1,9 @@
 package language
 
-import "math/rand"
+import (
+	"fmt"
+	"math/rand"
+)
 
 type Syllable struct {
 	OnsetCluster   []Sound
@@ -17,62 +20,43 @@ func RandomSyllable(language *Language) Syllable {
 		pattern = language.Patterns[rand.Intn(len(language.Patterns))]
 	}
 	//choose sounds that fit the pattern
-	var info SoundInformation
 	for _, sp := range pattern.NucleusPatterns {
-		info = language.Sounds[rand.Intn(len(language.Sounds))]
-		iterations = 0
-		for !sp.Fits(info.Sound) {
-			iterations++
-			if iterations > 1000 {
-				panic("Too many loops! Check your patterns.")
-			}
-			info = language.Sounds[rand.Intn(len(language.Sounds))]
-		}
-		syllable.NucleusCluster = append(syllable.NucleusCluster, info.Sound)
+		syllable.NucleusCluster = append(syllable.NucleusCluster, getSound(language, sp))
 	}
 
 	//now the onset
-	if pattern.OnsetPatterns == nil {
-		for iterations = 0; iterations < 4 && pattern.OnsetPatterns == nil; iterations++ {
-			pattern = language.Patterns[rand.Intn(len(language.Patterns))]
-		}
+	for iterations = 0; iterations < 4 && pattern.OnsetPatterns == nil; iterations++ {
+		pattern = language.Patterns[rand.Intn(len(language.Patterns))]
 	}
 	if pattern.OnsetPatterns != nil {
 		//choose sounds that fit the pattern
 		for _, sp := range pattern.OnsetPatterns {
-			info = language.Sounds[rand.Intn(len(language.Sounds))]
-			iterations = 0
-			for !sp.Fits(info.Sound) {
-				iterations++
-				if iterations > 1000 {
-					panic("Too many loops! Check your patterns.")
-				}
-				info = language.Sounds[rand.Intn(len(language.Sounds))]
-			}
-			syllable.OnsetCluster = append(syllable.OnsetCluster, info.Sound)
+			syllable.OnsetCluster = append(syllable.OnsetCluster, getSound(language, sp))
 		}
 	}
 
 	//and finally the coda
-	if pattern.CodaPatterns == nil {
-		for iterations = 0; iterations < 4 && pattern.CodaPatterns == nil; iterations++ {
-			pattern = language.Patterns[rand.Intn(len(language.Patterns))]
-		}
+	for iterations = 0; iterations < 4 && pattern.CodaPatterns == nil; iterations++ {
+		pattern = language.Patterns[rand.Intn(len(language.Patterns))]
 	}
 	if pattern.CodaPatterns != nil {
 		//choose sounds that fit the pattern
 		for _, sp := range pattern.CodaPatterns {
-			info = language.Sounds[rand.Intn(len(language.Sounds))]
-			iterations = 0
-			for !sp.Fits(info.Sound) {
-				iterations++
-				if iterations > 1000 {
-					panic("Too many loops! Check your patterns.")
-				}
-				info = language.Sounds[rand.Intn(len(language.Sounds))]
-			}
-			syllable.CodaCluster = append(syllable.CodaCluster, info.Sound)
+			syllable.CodaCluster = append(syllable.CodaCluster, getSound(language, sp))
 		}
 	}
 	return syllable
+}
+
+func getSound(language *Language, sp SoundPattern) Sound {
+	info := language.Sounds[rand.Intn(len(language.Sounds))]
+	iterations := 0
+	for !sp.Fits(info.Sound) {
+		iterations++
+		if iterations > 1000 {
+			panic("Too many loops! Check your patterns." + fmt.Sprint(sp))
+		}
+		info = language.Sounds[rand.Intn(len(language.Sounds))]
+	}
+	return info.Sound
 }

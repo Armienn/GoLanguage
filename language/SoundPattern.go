@@ -3,9 +3,9 @@ package language
 type TristateBool byte
 
 const (
-	TristateFalse TristateBool = iota
+	TristateUnknown TristateBool = iota
+	TristateFalse
 	TristateTrue
-	TristateUnknown
 )
 
 type SoundPattern struct {
