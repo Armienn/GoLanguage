@@ -1,5 +1,8 @@
 package language
 
+import "math/rand"
+import "fmt"
+
 type Language struct {
 	Sounds   []SoundInformation
 	Patterns []SyllablePattern
@@ -38,6 +41,51 @@ func (language *Language) GetRepresentation(word Word) string {
 
 func (language *Language) RandomWord(syllables int) Word {
 	return RandomWord(language, syllables)
+}
+
+func RandomLanguage() *Language {
+	language := new(Language)
+	language.Sounds = make([]SoundInformation, 0)
+	language.Patterns = make([]SyllablePattern, 0)
+
+	info := SoundInformation{}
+	pattern := SyllablePattern{}
+
+	soundCount := rand.Intn(20)
+	for i := 0; i < soundCount; i++ {
+		info.Sound = RandomSound()
+		info.Representation = "s" + fmt.Sprint(i)
+		language.Sounds = append(language.Sounds, info)
+	}
+
+	/*patternCount := rand.Intn(8)
+	for i := 0; i < patternCount; i++ {
+	pattern = SyllablePattern{}
+	pattern.OnsetPatterns = make([]SoundPattern, 0)
+	pattern.OnsetPatterns = append(pattern.OnsetPatterns,
+		SoundPattern{
+			Manners: []ArticulationManner{
+				Stop,
+				Fricative,
+			}})
+	language.Patterns = append(language.Patterns, pattern)
+	}*/
+	// all vowels can be nucleus, regardless of onset or coda
+	pattern.NucleusPatterns = make([]SoundPattern, 0)
+	pattern.NucleusPatterns = append(pattern.NucleusPatterns,
+		SoundPattern{
+			Manners: []ArticulationManner{
+				Close,
+				NearClose,
+				CloseMid,
+				Mid,
+				OpenMid,
+				NearOpen,
+				Open,
+			}})
+	language.Patterns = append(language.Patterns, pattern)
+
+	return language
 }
 
 func GetDansk() *Language {

@@ -10,7 +10,7 @@ import (
 
 func main() {
 	rand.Seed(time.Now().UTC().UnixNano())
-	lang := language.GetDansk()
+	lang := language.RandomLanguage()
 	for i := 0; i < 10; i++ {
 		word := lang.RandomWord(0)
 		fmt.Println(lang.GetRepresentation(word))
