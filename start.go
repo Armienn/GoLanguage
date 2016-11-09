@@ -16,6 +16,7 @@ func RandomSound() Sound {
 	for !sound.IsValid() {
 		sound.randomiseSound()
 	}
+	sound.Standardise()
 	return sound
 }
 
@@ -98,7 +99,7 @@ const (
 	VoiceCount
 )
 
-func (sound Sound) IsValid() bool {
+func (sound *Sound) IsValid() bool {
 	if sound.Rounded {
 		switch sound.Point {
 		case LabialLabial, LabialDental, CoronalLabial:
@@ -243,4 +244,81 @@ func (sound Sound) IsValid() bool {
 	default:
 		panic("Weird")
 	}
+}
+
+func (sound *Sound) Standardise() {
+	if sound.Shape == Sibilant {
+		switch sound.Manner {
+		case Closed, Stop, Flap, Trill, Close, NearClose, CloseMid, Mid, OpenMid, NearOpen, Open:
+			sound.Shape = Central
+		}
+		switch sound.Point {
+		case LabialLabial, LabialDental, CoronalLabial, DorsalPalatal, DorsalPalVel, DorsalVelar, DorsalVelUlu, DorsalUvular, RadicalPharyngeal, RadicalEpiglottal, Glottal:
+			sound.Shape = Central
+		}
+	}
+
+	if sound.Shape == Lateral {
+		switch sound.Manner {
+		case Closed, Stop, Trill, Close, NearClose, CloseMid, Mid, OpenMid, NearOpen, Open:
+			sound.Shape = Central
+		}
+		switch sound.Point {
+		case LabialLabial, LabialDental, RadicalPharyngeal, RadicalEpiglottal, Glottal:
+			sound.Shape = Central
+		}
+	}
+
+	if sound.Point == DorsalPalVel {
+		switch sound.Manner {
+		case Closed, Stop, Flap, Trill, Fricative, Approximant:
+			sound.Point = DorsalPalatal
+		}
+	}
+
+	if sound.Point == DorsalVelUlu {
+		switch sound.Manner {
+		case Closed, Stop, Flap, Trill, Fricative, Approximant:
+			sound.Point = DorsalUvular
+		}
+	}
+}
+
+func (sound *Sound) Encode() int {
+	enc := int(sound.Point)
+	enc += 16 * int(sound.Manner)
+	enc += 16 * 13 * int(sound.Shape)
+	enc += 16 * 13 * 3 * int(sound.Voice)
+	value := 0
+	if sound.Rounded {
+		value = 1
+	}
+	enc += 16 * 13 * 3 * 5 * value
+	value = 0
+	if sound.Nasal {
+		value = 1
+	}
+	enc += 16 * 13 * 3 * 5 * 2 * value
+	return enc
+}
+
+func Decode(enc int) Sound {
+	sound := new(Sound)
+	res := enc / (16 * 13 * 3 * 5 * 2)
+	sound.Nasal = res == 1
+	enc -= res * (16 * 13 * 3 * 5 * 2)
+	res = enc / (16 * 13 * 3 * 5)
+	sound.Rounded = res == 1
+	enc -= res * (16 * 13 * 3 * 5)
+	res = enc / (16 * 13 * 3)
+	sound.Voice = Voice(res)
+	enc -= res * (16 * 13 * 3)
+	res = enc / (16 * 13)
+	sound.Shape = TongueShape(res)
+	enc -= res * (16 * 13)
+	res = enc / 16
+	sound.Manner = ArticulationManner(res)
+	enc -= res * 16
+	sound.Point = ArticulationPoint(enc)
+	return *sound
 }
