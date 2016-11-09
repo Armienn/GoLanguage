@@ -6,6 +6,6 @@ type Syllable struct {
 	CodaCluster    []Sound
 }
 
-func RandomSyllable() Syllable {
+func RandomSyllable(language *Language) Syllable {
 	return Syllable{}
 }

@@ -35,3 +35,7 @@ func (language *Language) GetRepresentation(word Word) string {
 	}
 	return result
 }
+
+func (language *Language) RandomWord(syllables int) Word {
+	return RandomWord(language, syllables)
+}
