@@ -5,3 +5,7 @@ type SyllablePattern struct {
 	NucleusPatterns []SoundPattern
 	CodaPatterns    []SoundPattern
 }
+
+func NewSyllablePattern() *SyllablePattern {
+	return &SyllablePattern{make([]SoundPattern, 0), make([]SoundPattern, 0), make([]SoundPattern, 0)}
+}
