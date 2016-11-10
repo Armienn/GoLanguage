@@ -25,7 +25,7 @@ func addVocalInfo(language *Language, baseSound Sound, manner ArticulationManner
 func GetIpa() *Language {
 	language := new(Language)
 	language.Sounds = make([]SoundInformation, 0)
-	language.Patterns = make([]SyllablePattern, 0)
+	language.Patterns = BasicPatterns()
 
 	baseSound := Sound{LabialLabial, Closed, Central, false, true, Voiceless}
 	addInfo(language, baseSound, LabialLabial, false, "m̥")
@@ -218,48 +218,6 @@ func GetIpa() *Language {
 	baseSound = Sound{DorsalVelUlu, Close, Central, false, false, Modal}
 	addVocalInfo(language, baseSound, NearClose, false, "ɯ̽")
 	addVocalInfo(language, baseSound, NearClose, true, "ʊ")
-
-	// rules
-	pattern := SyllablePattern{}
-	pattern.NucleusPatterns = make([]SoundPattern, 0)
-	pattern.NucleusPatterns = append(pattern.NucleusPatterns,
-		SoundPattern{
-			Manners: []ArticulationManner{
-				Close,
-				NearClose,
-				CloseMid,
-				Mid,
-				OpenMid,
-				NearOpen,
-				Open,
-			}})
-	language.Patterns = append(language.Patterns, pattern)
-	pattern = SyllablePattern{}
-	pattern.CodaPatterns = make([]SoundPattern, 0)
-	pattern.CodaPatterns = append(pattern.CodaPatterns,
-		SoundPattern{
-			Manners: []ArticulationManner{
-				Closed,
-				Stop,
-				Flap,
-				Trill,
-				Fricative,
-				Approximant,
-			}})
-	language.Patterns = append(language.Patterns, pattern)
-	pattern = SyllablePattern{}
-	pattern.OnsetPatterns = make([]SoundPattern, 0)
-	pattern.OnsetPatterns = append(pattern.OnsetPatterns,
-		SoundPattern{
-			Manners: []ArticulationManner{
-				Closed,
-				Stop,
-				Flap,
-				Trill,
-				Fricative,
-				Approximant,
-			}})
-	language.Patterns = append(language.Patterns, pattern)
 
 	return language
 }

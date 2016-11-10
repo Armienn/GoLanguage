@@ -34,17 +34,11 @@ func (language *Language) RandomWord(syllables int) Word {
 	return RandomWord(language, syllables)
 }
 
-func RandomLanguage() *Language {
-	language := new(Language)
-	language.Sounds = make([]SoundInformation, 0)
-	language.Patterns = make([]SyllablePattern, 0)
-
+func RandomPhoneticInventory() []SoundInformation {
+	result := make([]SoundInformation, 0)
 	info := SoundInformation{}
-	pattern := SyllablePattern{}
-
 	basePoints := randomPoints()
 	baseVoices := randomVoices()
-
 	sounds := make([]Sound, 0)
 
 	sounds = append(sounds, randomSoundSet(basePoints, baseVoices, Closed)...)
@@ -64,27 +58,18 @@ func RandomLanguage() *Language {
 	for i := 0; i < 10; i++ {
 		sounds = mutateSoundSet(sounds)
 	}
-
 	for i := range sounds {
 		sounds[i].Standardise()
 		info.Sound = sounds[i]
 		info.Representation = "s" + fmt.Sprint(i)
-		language.Sounds = append(language.Sounds, info)
+		result = append(result, info)
 	}
+	return result
+}
 
-	/*patternCount := rand.Intn(8)
-	for i := 0; i < patternCount; i++ {
-	pattern = SyllablePattern{}
-	pattern.OnsetPatterns = make([]SoundPattern, 0)
-	pattern.OnsetPatterns = append(pattern.OnsetPatterns,
-		SoundPattern{
-			Manners: []ArticulationManner{
-				Stop,
-				Fricative,
-			}})
-	language.Patterns = append(language.Patterns, pattern)
-	}*/
-	// all vowels can be nucleus, regardless of onset or coda
+func BasicPatterns() []SyllablePattern {
+	patterns := make([]SyllablePattern, 0)
+	pattern := SyllablePattern{}
 	pattern.NucleusPatterns = make([]SoundPattern, 0)
 	pattern.NucleusPatterns = append(pattern.NucleusPatterns,
 		SoundPattern{
@@ -97,7 +82,7 @@ func RandomLanguage() *Language {
 				NearOpen,
 				Open,
 			}})
-	language.Patterns = append(language.Patterns, pattern)
+	patterns = append(patterns, pattern)
 	pattern = SyllablePattern{}
 	pattern.CodaPatterns = make([]SoundPattern, 0)
 	pattern.CodaPatterns = append(pattern.CodaPatterns,
@@ -110,7 +95,7 @@ func RandomLanguage() *Language {
 				Fricative,
 				Approximant,
 			}})
-	language.Patterns = append(language.Patterns, pattern)
+	patterns = append(patterns, pattern)
 	pattern = SyllablePattern{}
 	pattern.OnsetPatterns = make([]SoundPattern, 0)
 	pattern.OnsetPatterns = append(pattern.OnsetPatterns,
@@ -123,8 +108,14 @@ func RandomLanguage() *Language {
 				Fricative,
 				Approximant,
 			}})
-	language.Patterns = append(language.Patterns, pattern)
+	patterns = append(patterns, pattern)
+	return patterns
+}
 
+func RandomLanguage() *Language {
+	language := new(Language)
+	language.Sounds = RandomPhoneticInventory()
+	language.Patterns = BasicPatterns()
 	return language
 }
 
