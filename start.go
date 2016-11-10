@@ -14,20 +14,28 @@ func main() {
 	lang := language.RandomLanguage()
 	dansk := language.GetDansk()
 	ipa := language.GetIpa()
-
-	for _, info := range lang.Sounds {
-		fmt.Print(dansk.GetRepresentation(info.Sound))
-	}
-	fmt.Println()
-	for _, info := range lang.Sounds {
-		fmt.Print(ipa.GetRepresentation(info.Sound))
-	}
-	fmt.Println()
+	printAlphabet(dansk, dansk)
+	printAlphabet(dansk, ipa)
+	printAlphabet(ipa, dansk)
+	printAlphabet(ipa, ipa)
 
 	for i := 0; i < 10; i++ {
+		lang = language.RandomLanguage()
+		printAlphabet(lang, dansk)
+		printAlphabet(lang, ipa)
+	}
+
+	/*for i := 0; i < 10; i++ {
 		word := lang.RandomWord(0)
-		fmt.Println(lang.GetWordRepresentation(word))
 		fmt.Println(dansk.GetWordRepresentation(word))
 		fmt.Println(ipa.GetWordRepresentation(word))
+	}*/
+
+}
+
+func printAlphabet(lang *language.Language, representation *language.Language) {
+	for _, info := range lang.Sounds {
+		fmt.Print(representation.GetRepresentation(info.Sound))
 	}
+	fmt.Println()
 }
