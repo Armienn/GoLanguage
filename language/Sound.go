@@ -278,6 +278,34 @@ func (sound *Sound) Standardise() {
 	}
 }
 
+func Distance(soundA Sound, soundB Sound) int {
+	distance := 0
+	mannerDistance := int(soundA.Manner-soundB.Manner) * 2
+	if soundA.Nasal != soundB.Nasal {
+		mannerDistance += 6
+	}
+	if mannerDistance < 0 {
+		mannerDistance = -mannerDistance
+	}
+	pointDistance := int(soundA.Point - soundB.Point)
+	if pointDistance < 0 {
+		pointDistance = -pointDistance
+	}
+	voiceDistance := int(soundA.Voice - soundB.Voice)
+	if voiceDistance < 0 {
+		voiceDistance = -voiceDistance
+	}
+	shapeDistance := int(soundA.Shape - soundB.Shape)
+	if shapeDistance < 0 {
+		shapeDistance = -shapeDistance
+	}
+	distance = mannerDistance + pointDistance + voiceDistance + shapeDistance
+	if soundA.Rounded != soundB.Rounded {
+		distance++
+	}
+	return distance
+}
+
 func (sound *Sound) Encode() int {
 	enc := int(sound.Point)
 	enc += 16 * int(sound.Manner)

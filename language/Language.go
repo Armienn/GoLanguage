@@ -10,31 +10,18 @@ type Language struct {
 
 func (language *Language) GetRepresentation(word Word) string {
 	result := ""
-	for _, syllable := range word.Syllables {
-		for _, sound := range syllable.OnsetCluster {
-			for _, info := range language.Sounds {
-				if info.Sound == sound {
-					result += info.Representation
-					break
-				}
+	sounds := word.GetSounds()
+	for _, sound := range sounds {
+		minDistance := 10000
+		bestInfo := SoundInformation{}
+		for _, info := range language.Sounds {
+			distance := Distance(info.Sound, sound)
+			if distance < minDistance {
+				minDistance = distance
+				bestInfo = info
 			}
 		}
-		for _, sound := range syllable.NucleusCluster {
-			for _, info := range language.Sounds {
-				if info.Sound == sound {
-					result += info.Representation
-					break
-				}
-			}
-		}
-		for _, sound := range syllable.CodaCluster {
-			for _, info := range language.Sounds {
-				if info.Sound == sound {
-					result += info.Representation
-					break
-				}
-			}
-		}
+		result += bestInfo.Representation
 	}
 	return result
 }

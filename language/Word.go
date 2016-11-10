@@ -16,3 +16,19 @@ func RandomWord(language *Language, syllables int) Word {
 	}
 	return word
 }
+
+func (word *Word) GetSounds() []Sound {
+	sounds := make([]Sound, 0)
+	for _, syllable := range word.Syllables {
+		for _, sound := range syllable.OnsetCluster {
+			sounds = append(sounds, sound)
+		}
+		for _, sound := range syllable.NucleusCluster {
+			sounds = append(sounds, sound)
+		}
+		for _, sound := range syllable.CodaCluster {
+			sounds = append(sounds, sound)
+		}
+	}
+	return sounds
+}
