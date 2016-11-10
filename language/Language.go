@@ -8,22 +8,26 @@ type Language struct {
 	Patterns []SyllablePattern
 }
 
-func (language *Language) GetRepresentation(word Word) string {
+func (language *Language) GetWordRepresentation(word Word) string {
 	result := ""
 	sounds := word.GetSounds()
 	for _, sound := range sounds {
-		minDistance := 10000
-		bestInfo := SoundInformation{}
-		for _, info := range language.Sounds {
-			distance := Distance(info.Sound, sound)
-			if distance < minDistance {
-				minDistance = distance
-				bestInfo = info
-			}
-		}
-		result += bestInfo.Representation
+		result += language.GetRepresentation(sound)
 	}
 	return result
+}
+
+func (language *Language) GetRepresentation(sound Sound) string {
+	minDistance := 10000
+	bestInfo := SoundInformation{}
+	for _, info := range language.Sounds {
+		distance := Distance(info.Sound, sound)
+		if distance < minDistance {
+			minDistance = distance
+			bestInfo = info
+		}
+	}
+	return bestInfo.Representation
 }
 
 func (language *Language) RandomWord(syllables int) Word {
