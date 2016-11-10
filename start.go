@@ -14,22 +14,23 @@ func main() {
 	lang := language.RandomLanguage()
 	dansk := language.GetDansk()
 	ipa := language.GetIpa()
-	printAlphabet(dansk, dansk)
-	printAlphabet(dansk, ipa)
-	printAlphabet(ipa, dansk)
-	printAlphabet(ipa, ipa)
+	//printAlphabet(dansk, dansk)
+	//printAlphabet(dansk, ipa)
+	//printAlphabet(ipa, dansk)
+	//printAlphabet(ipa, ipa)
 
-	for i := 0; i < 10; i++ {
-		lang = language.RandomLanguage()
-		printAlphabet(lang, dansk)
-		printAlphabet(lang, ipa)
-	}
+	//for i := 0; i < 10; i++ {
+	//lang = language.RandomLanguage()
+	lang.Patterns = language.GetMubPatterns()
+	printAlphabet(lang, dansk)
+	printAlphabet(lang, ipa)
+	//}
 
-	/*for i := 0; i < 10; i++ {
+	for i := 0; i < 20; i++ {
 		word := lang.RandomWord(0)
 		fmt.Println(dansk.GetWordRepresentation(word))
 		fmt.Println(ipa.GetWordRepresentation(word))
-	}*/
+	}
 
 }
 

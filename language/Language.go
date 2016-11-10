@@ -120,10 +120,10 @@ func RandomLanguage() *Language {
 }
 
 func randomPoints() []ArticulationPoint {
-	pointCount := rand.Intn(4) + 1
+	pointCount := rand.Intn(5) + 1
 	points := make([]ArticulationPoint, pointCount)
 	for i := 0; i < pointCount; i++ {
-		newPoint := ArticulationPoint(rand.Intn(int(ArticulationPointCount)))
+		newPoint := semiRandomPoint()
 		valid := true
 		for j := 0; j < i; j++ {
 			difference := newPoint - points[j]
@@ -139,6 +139,18 @@ func randomPoints() []ArticulationPoint {
 		}
 	}
 	return points
+}
+
+func semiRandomPoint() ArticulationPoint {
+	newPoint := ArticulationPoint(rand.Intn(int(ArticulationPointCount)))
+	if rand.Intn(10) < 2 {
+		newPoint = CoronalAlveolar
+	} else if rand.Intn(10) < 2 {
+		newPoint = LabialLabial
+	} else if rand.Intn(10) < 2 {
+		newPoint = DorsalVelar
+	}
+	return newPoint
 }
 
 func randomVoices() []Voice {
@@ -526,6 +538,13 @@ func GetDansk() *Language {
 	language.Sounds = append(language.Sounds, info)
 
 	// rules
+	language.Patterns = GetDanskePatterns()
+
+	return language
+}
+
+func GetDanskePatterns() []SyllablePattern {
+	patterns := make([]SyllablePattern, 0)
 	pattern := SyllablePattern{}
 	// all vowels can be nucleus, regardless of onset or coda
 	pattern.NucleusPatterns = make([]SoundPattern, 0)
@@ -540,7 +559,7 @@ func GetDansk() *Language {
 				NearOpen,
 				Open,
 			}})
-	language.Patterns = append(language.Patterns, pattern)
+	patterns = append(patterns, pattern)
 	// all stops and fricatives can be onset
 	pattern = SyllablePattern{}
 	pattern.OnsetPatterns = make([]SoundPattern, 0)
@@ -550,7 +569,7 @@ func GetDansk() *Language {
 				Stop,
 				Fricative,
 			}})
-	language.Patterns = append(language.Patterns, pattern)
+	patterns = append(patterns, pattern)
 	// n and m can be onset
 	pattern = SyllablePattern{}
 	pattern.OnsetPatterns = make([]SoundPattern, 0)
@@ -563,7 +582,7 @@ func GetDansk() *Language {
 				LabialLabial,
 				CoronalAlveolar,
 			}})
-	language.Patterns = append(language.Patterns, pattern)
+	patterns = append(patterns, pattern)
 	// v, j and r can be onset
 	pattern = SyllablePattern{}
 	pattern.OnsetPatterns = make([]SoundPattern, 0)
@@ -577,7 +596,7 @@ func GetDansk() *Language {
 				DorsalPalatal,
 				DorsalUvular,
 			}})
-	language.Patterns = append(language.Patterns, pattern)
+	patterns = append(patterns, pattern)
 	// l can be onset
 	pattern = SyllablePattern{}
 	pattern.OnsetPatterns = make([]SoundPattern, 0)
@@ -592,7 +611,7 @@ func GetDansk() *Language {
 			Shapes: []TongueShape{
 				Lateral,
 			}})
-	language.Patterns = append(language.Patterns, pattern)
+	patterns = append(patterns, pattern)
 	// all consonants can be coda, regardless of nucleus or onset
 	pattern = SyllablePattern{}
 	pattern.CodaPatterns = make([]SoundPattern, 0)
@@ -604,7 +623,7 @@ func GetDansk() *Language {
 				Fricative,
 				Approximant,
 			}})
-	language.Patterns = append(language.Patterns, pattern)
+	patterns = append(patterns, pattern)
 	// onset can have clusters of s+(unaspirated)stops, regardless of nucleus or coda
 	pattern = SyllablePattern{}
 	pattern.OnsetPatterns = make([]SoundPattern, 0)
@@ -624,7 +643,7 @@ func GetDansk() *Language {
 			Voices: []Voice{
 				Voiceless,
 			}})
-	language.Patterns = append(language.Patterns, pattern)
+	patterns = append(patterns, pattern)
 	// onset can have clusters of s+(unaspirated)stops+r, regardless of nucleus or coda
 	pattern = SyllablePattern{}
 	pattern.OnsetPatterns = make([]SoundPattern, 0)
@@ -652,7 +671,69 @@ func GetDansk() *Language {
 			Points: []ArticulationPoint{
 				DorsalUvular,
 			}})
-	language.Patterns = append(language.Patterns, pattern)
+	patterns = append(patterns, pattern)
+	return patterns
+}
 
-	return language
+func GetMubPatterns() []SyllablePattern {
+	patterns := make([]SyllablePattern, 0)
+	pattern := SyllablePattern{}
+	// all vowels can be nucleus, regardless of onset or coda
+	pattern.NucleusPatterns = make([]SoundPattern, 0)
+	pattern.NucleusPatterns = append(pattern.NucleusPatterns,
+		SoundPattern{
+			Manners: []ArticulationManner{
+				Close,
+				NearClose,
+				CloseMid,
+				Mid,
+				OpenMid,
+				NearOpen,
+				Open,
+			}})
+	patterns = append(patterns, pattern)
+	// all consonants can be onset, regardless of nucleus or coda
+	pattern = SyllablePattern{}
+	pattern.OnsetPatterns = make([]SoundPattern, 0)
+	pattern.OnsetPatterns = append(pattern.OnsetPatterns,
+		SoundPattern{
+			Manners: []ArticulationManner{
+				Closed,
+				Stop,
+				Flap,
+				Trill,
+				Fricative,
+				Approximant,
+			}})
+	patterns = append(patterns, pattern)
+	// all consonants can be coda, regardless of nucleus or onset
+	pattern = SyllablePattern{}
+	pattern.CodaPatterns = make([]SoundPattern, 0)
+	pattern.CodaPatterns = append(pattern.CodaPatterns,
+		SoundPattern{
+			Manners: []ArticulationManner{
+				Closed,
+				Stop,
+				Flap,
+				Trill,
+				Fricative,
+				Approximant,
+			}})
+	patterns = append(patterns, pattern)
+	// onset can have clusters of stops+fricatives/Approximant, regardless of nucleus or coda
+	pattern = SyllablePattern{}
+	pattern.OnsetPatterns = make([]SoundPattern, 0)
+	pattern.OnsetPatterns = append(pattern.OnsetPatterns,
+		SoundPattern{
+			Manners: []ArticulationManner{
+				Stop,
+			}})
+	pattern.OnsetPatterns = append(pattern.OnsetPatterns,
+		SoundPattern{
+			Manners: []ArticulationManner{
+				Fricative,
+				Approximant,
+			}})
+	patterns = append(patterns, pattern)
+	return patterns
 }
