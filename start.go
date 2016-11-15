@@ -35,8 +35,8 @@ func main() {
 }
 
 func printAlphabet(lang *language.Language, representation *language.Language) {
-	for _, info := range lang.Sounds {
-		fmt.Print(representation.GetRepresentation(info.Sound))
+	for _, sound := range lang.Sounds {
+		fmt.Print(representation.GetRepresentation(sound))
 	}
 	fmt.Println()
 }

@@ -49,14 +49,30 @@ func RandomSyllable(language *Language) Syllable {
 }
 
 func getSound(language *Language, sp SoundPattern) Sound {
-	info := language.Sounds[rand.Intn(len(language.Sounds))]
+	//info := language.Sounds[rand.Intn(len(language.Sounds))]
+	sound, ok := getRandomSound(language)
+	if !ok {
+		return Sound{}
+	}
 	iterations := 0
-	for !sp.Fits(info.Sound) {
+	for !sp.Fits(sound) {
 		iterations++
 		if iterations > 1000 {
 			panic("Too many loops! Check your patterns." + fmt.Sprint(sp))
 		}
-		info = language.Sounds[rand.Intn(len(language.Sounds))]
+		sound, ok = getRandomSound(language)
 	}
-	return info.Sound
+	return sound
+}
+
+func getRandomSound(language *Language) (sound Sound, ok bool) {
+	i := 0
+	n := rand.Intn(len(language.Sounds))
+	for _, s := range language.Sounds {
+		if i == n {
+			return s, true
+		}
+		i++
+	}
+	return Sound{}, false
 }

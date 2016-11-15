@@ -4,7 +4,7 @@ import "math/rand"
 import "fmt"
 
 type Language struct {
-	Sounds   []SoundInformation
+	Sounds   map[string]Sound
 	Patterns []SyllablePattern
 }
 
@@ -19,24 +19,23 @@ func (language *Language) GetWordRepresentation(word Word) string {
 
 func (language *Language) GetRepresentation(sound Sound) string {
 	minDistance := 10000
-	bestInfo := SoundInformation{}
-	for _, info := range language.Sounds {
-		distance := Distance(info.Sound, sound)
+	bestRepresentation := "!"
+	for representation, languageSound := range language.Sounds {
+		distance := Distance(languageSound, sound)
 		if distance < minDistance {
 			minDistance = distance
-			bestInfo = info
+			bestRepresentation = representation
 		}
 	}
-	return bestInfo.Representation
+	return bestRepresentation
 }
 
 func (language *Language) RandomWord(syllables int) Word {
 	return RandomWord(language, syllables)
 }
 
-func RandomPhoneticInventory() []SoundInformation {
-	result := make([]SoundInformation, 0)
-	info := SoundInformation{}
+func RandomPhoneticInventory() map[string]Sound {
+	result := make(map[string]Sound)
 	basePoints := randomPoints()
 	baseVoices := randomVoices()
 	sounds := make([]Sound, 0)
@@ -60,9 +59,7 @@ func RandomPhoneticInventory() []SoundInformation {
 	}
 	for i := range sounds {
 		sounds[i].Standardise()
-		info.Sound = sounds[i]
-		info.Representation = "s" + fmt.Sprint(i)
-		result = append(result, info)
+		result["s"+fmt.Sprint(i)] = sounds[i]
 	}
 	return result
 }

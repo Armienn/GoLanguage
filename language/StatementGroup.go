@@ -1,5 +1,9 @@
 package language
 
+type Translator interface {
+	Translate(*StatementGroup) []Word
+}
+
 // The core representation of a sentence/statement. The will be a core language,
 // which directly corresponds to this structure, and other languages can then be
 // collections of arbitrary word groups along with rules for how to translate

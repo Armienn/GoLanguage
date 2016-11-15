@@ -45,31 +45,25 @@ func BasicPatterns() []SyllablePattern {
 	return patterns
 }
 
-func addInfo(language *Language, baseSound Sound, point ArticulationPoint, voiced bool, representation string) {
-	info := SoundInformation{}
-	info.Sound = baseSound
-	info.Sound.Point = point
+func addInfo(language *Language, sound Sound, point ArticulationPoint, voiced bool, representation string) {
+	sound.Point = point
 	if voiced {
-		info.Sound.Voice = Modal
+		sound.Voice = Modal
 	} else {
-		info.Sound.Voice = Voiceless
+		sound.Voice = Voiceless
 	}
-	info.Representation = representation
-	language.Sounds = append(language.Sounds, info)
+	language.Sounds[representation] = sound
 }
 
-func addVocalInfo(language *Language, baseSound Sound, manner ArticulationManner, rounded bool, representation string) {
-	info := SoundInformation{}
-	info.Sound = baseSound
-	info.Sound.Manner = manner
-	info.Sound.Rounded = rounded
-	info.Representation = representation
-	language.Sounds = append(language.Sounds, info)
+func addVocalInfo(language *Language, sound Sound, manner ArticulationManner, rounded bool, representation string) {
+	sound.Manner = manner
+	sound.Rounded = rounded
+	language.Sounds[representation] = sound
 }
 
 func GetIpa() *Language {
 	language := new(Language)
-	language.Sounds = make([]SoundInformation, 0)
+	language.Sounds = make(map[string]Sound)
 	language.Patterns = BasicPatterns()
 
 	baseSound := Sound{LabialLabial, Closed, Central, false, true, Voiceless}
@@ -269,9 +263,8 @@ func GetIpa() *Language {
 
 func GetDansk() *Language {
 	language := new(Language)
-	language.Sounds = make([]SoundInformation, 0)
+	language.Sounds = make(map[string]Sound)
 	language.Patterns = make([]SyllablePattern, 0)
-	info := SoundInformation{}
 	sound := Sound{}
 	//M
 	sound.Manner = Closed
@@ -280,9 +273,7 @@ func GetDansk() *Language {
 	sound.Voice = Modal
 	sound.Nasal = true
 	sound.Rounded = false
-	info.Sound = sound
-	info.Representation = "m"
-	language.Sounds = append(language.Sounds, info)
+	language.Sounds["m"] = sound
 	//N
 	sound.Manner = Closed
 	sound.Point = CoronalAlveolar
@@ -290,9 +281,7 @@ func GetDansk() *Language {
 	sound.Voice = Modal
 	sound.Nasal = true
 	sound.Rounded = false
-	info.Sound = sound
-	info.Representation = "n"
-	language.Sounds = append(language.Sounds, info)
+	language.Sounds["n"] = sound
 	//NG
 	sound.Manner = Closed
 	sound.Point = DorsalVelar
@@ -300,9 +289,7 @@ func GetDansk() *Language {
 	sound.Voice = Modal
 	sound.Nasal = true
 	sound.Rounded = false
-	info.Sound = sound
-	info.Representation = "ŋ"
-	language.Sounds = append(language.Sounds, info)
+	language.Sounds["ŋ"] = sound
 	//P
 	sound.Manner = Stop
 	sound.Point = LabialLabial
@@ -310,9 +297,7 @@ func GetDansk() *Language {
 	sound.Voice = Aspirated
 	sound.Nasal = false
 	sound.Rounded = false
-	info.Sound = sound
-	info.Representation = "p"
-	language.Sounds = append(language.Sounds, info)
+	language.Sounds["p"] = sound
 	//B
 	sound.Manner = Stop
 	sound.Point = LabialLabial
@@ -320,9 +305,7 @@ func GetDansk() *Language {
 	sound.Voice = Voiceless
 	sound.Nasal = false
 	sound.Rounded = false
-	info.Sound = sound
-	info.Representation = "b"
-	language.Sounds = append(language.Sounds, info)
+	language.Sounds["b"] = sound
 	//T
 	sound.Manner = Stop
 	sound.Point = CoronalAlveolar
@@ -330,9 +313,7 @@ func GetDansk() *Language {
 	sound.Voice = Aspirated
 	sound.Nasal = false
 	sound.Rounded = false
-	info.Sound = sound
-	info.Representation = "t"
-	language.Sounds = append(language.Sounds, info)
+	language.Sounds["t"] = sound
 	//D
 	sound.Manner = Stop
 	sound.Point = CoronalAlveolar
@@ -340,9 +321,7 @@ func GetDansk() *Language {
 	sound.Voice = Voiceless
 	sound.Nasal = false
 	sound.Rounded = false
-	info.Sound = sound
-	info.Representation = "d"
-	language.Sounds = append(language.Sounds, info)
+	language.Sounds["d"] = sound
 	//K
 	sound.Manner = Stop
 	sound.Point = DorsalVelar
@@ -350,9 +329,7 @@ func GetDansk() *Language {
 	sound.Voice = Aspirated
 	sound.Nasal = false
 	sound.Rounded = false
-	info.Sound = sound
-	info.Representation = "k"
-	language.Sounds = append(language.Sounds, info)
+	language.Sounds["k"] = sound
 	//G
 	sound.Manner = Stop
 	sound.Point = DorsalVelar
@@ -360,9 +337,7 @@ func GetDansk() *Language {
 	sound.Voice = Voiceless
 	sound.Nasal = false
 	sound.Rounded = false
-	info.Sound = sound
-	info.Representation = "g"
-	language.Sounds = append(language.Sounds, info)
+	language.Sounds["g"] = sound
 	//F
 	sound.Manner = Fricative
 	sound.Point = LabialDental
@@ -370,9 +345,7 @@ func GetDansk() *Language {
 	sound.Voice = Voiceless
 	sound.Nasal = false
 	sound.Rounded = false
-	info.Sound = sound
-	info.Representation = "f"
-	language.Sounds = append(language.Sounds, info)
+	language.Sounds["f"] = sound
 	//V
 	sound.Manner = Approximant
 	sound.Point = LabialDental
@@ -380,9 +353,7 @@ func GetDansk() *Language {
 	sound.Voice = Modal
 	sound.Nasal = false
 	sound.Rounded = false
-	info.Sound = sound
-	info.Representation = "v"
-	language.Sounds = append(language.Sounds, info)
+	language.Sounds["v"] = sound
 	//S
 	sound.Manner = Fricative
 	sound.Point = CoronalAlveolar
@@ -390,9 +361,7 @@ func GetDansk() *Language {
 	sound.Voice = Voiceless
 	sound.Nasal = false
 	sound.Rounded = false
-	info.Sound = sound
-	info.Representation = "s"
-	language.Sounds = append(language.Sounds, info)
+	language.Sounds["s"] = sound
 	//DH
 	sound.Manner = Approximant
 	sound.Point = CoronalAlveolar
@@ -400,9 +369,7 @@ func GetDansk() *Language {
 	sound.Voice = Modal
 	sound.Nasal = false
 	sound.Rounded = false
-	info.Sound = sound
-	info.Representation = "ð"
-	language.Sounds = append(language.Sounds, info)
+	language.Sounds["ð"] = sound
 	//J
 	sound.Manner = Approximant
 	sound.Point = DorsalPalatal
@@ -410,9 +377,7 @@ func GetDansk() *Language {
 	sound.Voice = Modal
 	sound.Nasal = false
 	sound.Rounded = false
-	info.Sound = sound
-	info.Representation = "j"
-	language.Sounds = append(language.Sounds, info)
+	language.Sounds["j"] = sound
 	//L
 	sound.Manner = Approximant
 	sound.Point = CoronalAlveolar
@@ -420,9 +385,7 @@ func GetDansk() *Language {
 	sound.Voice = Voiceless
 	sound.Nasal = false
 	sound.Rounded = false
-	info.Sound = sound
-	info.Representation = "l"
-	language.Sounds = append(language.Sounds, info)
+	language.Sounds["l"] = sound
 	//R
 	sound.Manner = Approximant
 	sound.Point = DorsalUvular
@@ -430,9 +393,7 @@ func GetDansk() *Language {
 	sound.Voice = Modal
 	sound.Nasal = false
 	sound.Rounded = false
-	info.Sound = sound
-	info.Representation = "r"
-	language.Sounds = append(language.Sounds, info)
+	language.Sounds["r"] = sound
 	//H
 	sound.Manner = Fricative
 	sound.Point = Glottal
@@ -440,9 +401,7 @@ func GetDansk() *Language {
 	sound.Voice = Voiceless
 	sound.Nasal = false
 	sound.Rounded = false
-	info.Sound = sound
-	info.Representation = "h"
-	language.Sounds = append(language.Sounds, info)
+	language.Sounds["h"] = sound
 
 	//I
 	sound.Manner = Close
@@ -451,9 +410,7 @@ func GetDansk() *Language {
 	sound.Voice = Modal
 	sound.Nasal = false
 	sound.Rounded = false
-	info.Sound = sound
-	info.Representation = "i"
-	language.Sounds = append(language.Sounds, info)
+	language.Sounds["i"] = sound
 	//Y
 	sound.Manner = Close
 	sound.Point = DorsalPalVel
@@ -461,9 +418,7 @@ func GetDansk() *Language {
 	sound.Voice = Modal
 	sound.Nasal = false
 	sound.Rounded = true
-	info.Sound = sound
-	info.Representation = "y"
-	language.Sounds = append(language.Sounds, info)
+	language.Sounds["y"] = sound
 	//E
 	sound.Manner = CloseMid
 	sound.Point = DorsalPalatal
@@ -471,9 +426,7 @@ func GetDansk() *Language {
 	sound.Voice = Modal
 	sound.Nasal = false
 	sound.Rounded = false
-	info.Sound = sound
-	info.Representation = "e"
-	language.Sounds = append(language.Sounds, info)
+	language.Sounds["e"] = sound
 	//Ø
 	sound.Manner = CloseMid
 	sound.Point = DorsalPalVel
@@ -481,9 +434,7 @@ func GetDansk() *Language {
 	sound.Voice = Modal
 	sound.Nasal = false
 	sound.Rounded = true
-	info.Sound = sound
-	info.Representation = "ø"
-	language.Sounds = append(language.Sounds, info)
+	language.Sounds["ø"] = sound
 	//Æ
 	sound.Manner = OpenMid
 	sound.Point = DorsalPalatal
@@ -491,9 +442,7 @@ func GetDansk() *Language {
 	sound.Voice = Modal
 	sound.Nasal = false
 	sound.Rounded = false
-	info.Sound = sound
-	info.Representation = "æ"
-	language.Sounds = append(language.Sounds, info)
+	language.Sounds["æ"] = sound
 	//schwa
 	sound.Manner = Mid
 	sound.Point = DorsalVelar
@@ -501,9 +450,7 @@ func GetDansk() *Language {
 	sound.Voice = Modal
 	sound.Nasal = false
 	sound.Rounded = false
-	info.Sound = sound
-	info.Representation = "ə"
-	language.Sounds = append(language.Sounds, info)
+	language.Sounds["ə"] = sound
 	//U
 	sound.Manner = Close
 	sound.Point = DorsalUvular
@@ -511,9 +458,7 @@ func GetDansk() *Language {
 	sound.Voice = Modal
 	sound.Nasal = false
 	sound.Rounded = true
-	info.Sound = sound
-	info.Representation = "u"
-	language.Sounds = append(language.Sounds, info)
+	language.Sounds["u"] = sound
 	//O
 	sound.Manner = CloseMid
 	sound.Point = DorsalUvular
@@ -521,9 +466,7 @@ func GetDansk() *Language {
 	sound.Voice = Modal
 	sound.Nasal = false
 	sound.Rounded = true
-	info.Sound = sound
-	info.Representation = "o"
-	language.Sounds = append(language.Sounds, info)
+	language.Sounds["o"] = sound
 	//Å
 	sound.Manner = CloseMid
 	sound.Point = DorsalVelUlu
@@ -531,9 +474,7 @@ func GetDansk() *Language {
 	sound.Voice = Modal
 	sound.Nasal = false
 	sound.Rounded = true
-	info.Sound = sound
-	info.Representation = "å"
-	language.Sounds = append(language.Sounds, info)
+	language.Sounds["å"] = sound
 	//A abe
 	sound.Manner = NearOpen
 	sound.Point = DorsalPalatal
@@ -541,9 +482,7 @@ func GetDansk() *Language {
 	sound.Voice = Modal
 	sound.Nasal = false
 	sound.Rounded = false
-	info.Sound = sound
-	info.Representation = "a"
-	language.Sounds = append(language.Sounds, info)
+	language.Sounds["a"] = sound
 	//A haj
 	sound.Manner = NearOpen
 	sound.Point = DorsalVelUlu
@@ -551,9 +490,7 @@ func GetDansk() *Language {
 	sound.Voice = Modal
 	sound.Nasal = false
 	sound.Rounded = false
-	info.Sound = sound
-	info.Representation = "ɒ"
-	language.Sounds = append(language.Sounds, info)
+	language.Sounds["ɒ"] = sound
 
 	// rules
 	language.Patterns = GetDanskePatterns()
