@@ -45,7 +45,7 @@ func BasicPatterns() []SyllablePattern {
 	return patterns
 }
 
-func addInfo(language *Language, sound Sound, point ArticulationPoint, voiced bool, representation string) {
+func addInfo(language *Phonetics, sound Sound, point ArticulationPoint, voiced bool, representation string) {
 	sound.Point = point
 	if voiced {
 		sound.Voice = Modal
@@ -55,14 +55,14 @@ func addInfo(language *Language, sound Sound, point ArticulationPoint, voiced bo
 	language.Sounds[representation] = sound
 }
 
-func addVocalInfo(language *Language, sound Sound, manner ArticulationManner, rounded bool, representation string) {
+func addVocalInfo(language *Phonetics, sound Sound, manner ArticulationManner, rounded bool, representation string) {
 	sound.Manner = manner
 	sound.Rounded = rounded
 	language.Sounds[representation] = sound
 }
 
-func GetIpa() *Language {
-	language := new(Language)
+func GetIpa() *Phonetics {
+	language := new(Phonetics)
 	language.Sounds = make(map[string]Sound)
 	language.Patterns = BasicPatterns()
 
@@ -261,8 +261,8 @@ func GetIpa() *Language {
 	return language
 }
 
-func GetDansk() *Language {
-	language := new(Language)
+func GetDansk() *Phonetics {
+	language := new(Phonetics)
 	language.Sounds = make(map[string]Sound)
 	language.Patterns = make([]SyllablePattern, 0)
 	sound := Sound{}

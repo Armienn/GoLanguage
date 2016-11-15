@@ -11,7 +11,7 @@ import (
 func main() {
 	rand.Seed(time.Now().UTC().UnixNano())
 	//rand.Seed(1)
-	lang := language.RandomLanguage()
+	lang := language.RandomPhonetics()
 	dansk := language.GetDansk()
 	ipa := language.GetIpa()
 	//printAlphabet(dansk, dansk)
@@ -34,7 +34,7 @@ func main() {
 
 }
 
-func printAlphabet(lang *language.Language, representation *language.Language) {
+func printAlphabet(lang *language.Phonetics, representation *language.Phonetics) {
 	for _, sound := range lang.Sounds {
 		fmt.Print(representation.GetRepresentation(sound))
 	}

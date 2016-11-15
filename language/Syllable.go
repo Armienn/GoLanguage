@@ -11,46 +11,45 @@ type Syllable struct {
 	CodaCluster    []Sound
 }
 
-func RandomSyllable(language *Language) Syllable {
+func RandomSyllable(phonetics *Phonetics) Syllable {
 	syllable := Syllable{make([]Sound, 0), make([]Sound, 0), make([]Sound, 0)}
 	iterations := 0 //for checking that we don't end up in an eternal loop
 	//first choose a random pattern concerning nucleus
-	pattern := language.Patterns[rand.Intn(len(language.Patterns))]
+	pattern := phonetics.Patterns[rand.Intn(len(phonetics.Patterns))]
 	for pattern.NucleusPatterns == nil {
-		pattern = language.Patterns[rand.Intn(len(language.Patterns))]
+		pattern = phonetics.Patterns[rand.Intn(len(phonetics.Patterns))]
 	}
 	//choose sounds that fit the pattern
 	for _, sp := range pattern.NucleusPatterns {
-		syllable.NucleusCluster = append(syllable.NucleusCluster, getSound(language, sp))
+		syllable.NucleusCluster = append(syllable.NucleusCluster, getSound(phonetics, sp))
 	}
 
 	//now the onset
 	for iterations = 0; iterations < 4 && pattern.OnsetPatterns == nil; iterations++ {
-		pattern = language.Patterns[rand.Intn(len(language.Patterns))]
+		pattern = phonetics.Patterns[rand.Intn(len(phonetics.Patterns))]
 	}
 	if pattern.OnsetPatterns != nil {
 		//choose sounds that fit the pattern
 		for _, sp := range pattern.OnsetPatterns {
-			syllable.OnsetCluster = append(syllable.OnsetCluster, getSound(language, sp))
+			syllable.OnsetCluster = append(syllable.OnsetCluster, getSound(phonetics, sp))
 		}
 	}
 
 	//and finally the coda
 	for iterations = 0; iterations < 4 && pattern.CodaPatterns == nil; iterations++ {
-		pattern = language.Patterns[rand.Intn(len(language.Patterns))]
+		pattern = phonetics.Patterns[rand.Intn(len(phonetics.Patterns))]
 	}
 	if pattern.CodaPatterns != nil {
 		//choose sounds that fit the pattern
 		for _, sp := range pattern.CodaPatterns {
-			syllable.CodaCluster = append(syllable.CodaCluster, getSound(language, sp))
+			syllable.CodaCluster = append(syllable.CodaCluster, getSound(phonetics, sp))
 		}
 	}
 	return syllable
 }
 
-func getSound(language *Language, sp SoundPattern) Sound {
-	//info := language.Sounds[rand.Intn(len(language.Sounds))]
-	sound, ok := getRandomSound(language)
+func getSound(phonetics *Phonetics, sp SoundPattern) Sound {
+	sound, ok := getRandomSound(phonetics)
 	if !ok {
 		return Sound{}
 	}
@@ -60,15 +59,15 @@ func getSound(language *Language, sp SoundPattern) Sound {
 		if iterations > 1000 {
 			panic("Too many loops! Check your patterns." + fmt.Sprint(sp))
 		}
-		sound, ok = getRandomSound(language)
+		sound, ok = getRandomSound(phonetics)
 	}
 	return sound
 }
 
-func getRandomSound(language *Language) (sound Sound, ok bool) {
+func getRandomSound(phonetics *Phonetics) (sound Sound, ok bool) {
 	i := 0
-	n := rand.Intn(len(language.Sounds))
-	for _, s := range language.Sounds {
+	n := rand.Intn(len(phonetics.Sounds))
+	for _, s := range phonetics.Sounds {
 		if i == n {
 			return s, true
 		}

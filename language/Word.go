@@ -6,13 +6,13 @@ type Word struct {
 	Syllables []Syllable
 }
 
-func RandomWord(language *Language, syllables int) Word {
+func RandomWord(phonetics *Phonetics, syllables int) Word {
 	if syllables == 0 {
 		syllables = rand.Intn(3) + 1
 	}
 	word := Word{make([]Syllable, syllables)}
 	for i := 0; i < syllables; i++ {
-		word.Syllables[i] = RandomSyllable(language)
+		word.Syllables[i] = RandomSyllable(phonetics)
 	}
 	return word
 }
