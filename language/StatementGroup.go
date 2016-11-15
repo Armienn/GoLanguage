@@ -5,45 +5,11 @@ package language
 // collections of arbitrary word groups along with rules for how to translate
 // from the core language
 type StatementGroup struct {
-	CoreConcept     Concept
-	ExpandedConcept *StatementGroup
-	StatementType   StatementType // statement, subject, object, vocative (vocated?), instrument, time, etc
+	SimpleConcept   Concept
+	CompoundConcept *StatementGroup
+	Relation        Concept // statement, subject, object, vocative (vocated?), instrument, time, etc
 	Descriptors     []StatementGroup
 }
-
-type StatementType int
-
-const (
-	// first types for sentences
-	Statement StatementType = iota
-	But
-	If
-	Verbification
-	And
-	// then types for concepts
-	Doer
-	Beer
-	Object
-	Instrument
-	Material
-	Location //del op i flere: over, under, i, ved, etc? Ja
-	On
-	In
-	Under
-	Behind
-	Infrontof
-	Nextto
-	Comingfrom
-	Goingto
-	Time //same time as
-	After
-	Before
-	Owner
-	Owned
-	Reciever
-	Evoked
-	Descriptor
-)
 
 type Concept string
 
@@ -65,14 +31,16 @@ func GetCoreLanguage() map[Concept]ConceptInfo {
 		//"be":    *Info("doer is object", "doer", "object"),
 		//"do":    *Info("doer does object", "doer", "object"),
 		"beer":       *Info("beer is one who is object", "object"),
-		"doer":       *Info("beer is one who does object", "object"),             //object must be doable (must have a possible doer)
-		"object":     *Info("beer is one who is the object of object", "object"), //object must have a possible object
-		"descriptor": *Info("beer is a manifestation of the concept of object", "object"),
+		"doer":       *Info("beer is one who does object", "object"),                      //object must be doable (must have a possible doer)
+		"object":     *Info("beer is one who is the object of object", "object"),          //object must have a possible object
+		"descriptor": *Info("beer is a manifestation of the concept of object", "object"), //it is the beer of the concept... hm
 		"at":         *Info("beer is one who is at (near or in (either spacially or chronologically)) object", "object"),
 		"around":     *Info("beer is one who is spread around (either spacially or chronologically) object", "object"),
 		"before":     *Info("beer is one who is chronologically before object", "object"),
 		"after":      *Info("beer is one who is chronologically after object", "object"),
 		"now":        *Info("beer is one who is chronologically near/at/alongside object"),
+		"again":      *Info("beer is an event that reoccurs"),
+		"definite":   *Info("beer is one who is blabla todo"),
 		"sun":        *Info("beer is the sun of belonger", "belonger"),
 		"shine":      *Info("doer shines on reciever with light source instrument", "doer", "reciever", "instrument"),
 	}
@@ -81,17 +49,17 @@ func GetCoreLanguage() map[Concept]ConceptInfo {
 func GetSentences() []StatementGroup {
 	sentences := make([]StatementGroup, 0)
 	//a man eats a cat
-	sentence := NewStatementGroup("eat", Statement)
-	sentence.AddDescriptor(NewStatementGroup("man", Doer))
-	sentence.AddDescriptor(NewStatementGroup("cat", Object))
+	sentence := NewStatementGroup("eat", "")
+	sentence.AddDescriptor(NewStatementGroup("man", "doer"))
+	sentence.AddDescriptor(NewStatementGroup("cat", "object"))
 	sentences = append(sentences, *sentence)
 	//it rains
-	sentence = NewStatementGroup("rain", Statement)
+	sentence = NewStatementGroup("rain", "")
 	sentences = append(sentences, *sentence)
 	return sentences
 }
 
-func NewStatementGroup(base Concept, relation StatementType) *StatementGroup {
+func NewStatementGroup(base Concept, relation Concept) *StatementGroup {
 	return &StatementGroup{base, nil, relation, make([]StatementGroup, 0)}
 }
 
