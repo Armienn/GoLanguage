@@ -1,75 +1,63 @@
 Sing in me, Muse, and through me tell the story
-[stat:sing[doer:muse][location:me[relation:in]][--manner:command] [and:tell[--object:story[?:definitiv]][--instrument:me][--manner:command]]]
-
+[sing[doer:Muse][in:me][manner:command] [and:tell[doer:Muse?][instrument:me][object?:story[descriptor:definite]][manner:command]]]
 
 The sun shines.
-[stat:shine[doer:sun]]
-[stat:shine[doer:sun][time:now]]
-
-[shine[doer:sun][at-time:here]]
+[shine[doer:sun]]
+[shine[doer:sun][at:now]]
 
 The sun is shining.
-[stat:shine[doer:sun][time:now][--uh]]
-
-[shine[doer:sun][around-time:here]
+[shine[doer:sun][around:now]
 
 The sun shone.
-[stat:shine[doer:sun][time:now[relation:before]]]
-
-[shine[doer:sun][at-time:before]]
+[shine[doer:sun][at:before]]
 
 The sun will shine.
-[stat:shine[doer:sun][time:now[relation:after]]]
-
-[shine[doer:sun][at-time:after]]
+[shine[doer:sun][at:after]]
 
 The sun has been shining.
-[stat:shine[doer:sun][time:now[relation:before]][--uh]]
-
-[shine[doer:sun][around-time:before]]
+[shine[doer:sun][around:before]]
 
 The sun is shining again.
-[stat:shine[doer:sun][time:now][--uh][descriptor:again]]
+[shine[doer:sun][around:now][descriptor:again]]
 
 The sun will shine tomorrow.
-[stat:shine[doer:sun][time:day[--nounverb:after[beer:--who][--object:now]]]
-[stat:shine[doer:sun][time:day[descriptor:[--nounverb:after[beer:--who][--object:now]]]]  it'll shine another day after now, more or less
-[stat:shine[doer:sun][time:day[descriptor:[--nounverb:after[beer:--who][--object:now]][--?:definitiv]]]  it'll shine the day after now, (which 'the' though?)
+[shine[doer:sun][at:day[after:now][descriptor:definite]]
 
 The sun shines brightly.
-[stat:shine[doer:sun][descriptor:bright]]
-[stat:shine[doer:sun][time:now][descriptor:bright]]
+[shine[doer:sun][at:now][descriptor:bright]]
 
 The bright sun shines.
-[stat:shine[doer:sun[descriptor:bright]][time:now]]
+[shine[doer:sun[descriptor:bright]][at:now]]
 
 The sun is rising now.
-[stat:rise[doer:sun][time:now][--uh]]
+[rise[doer:sun][around:now]]
 
 All the people shouted.
-[stat:shout[doer:person[--amount:all]][time:now[relation:before]]]
+[shout[doer:person[descriptor:all]][at:before]]
 
 Some of the people shouted.
-[stat:shout[doer:person[--amount:some]][time:now[relation:before]]]
+[shout[doer:person[descriptor:some]][at:before]]
 
 Many of the people shouted twice.
-[stat:shout[doer:person[--amount:many]][time:now[relation:before]][--amount:two]]
+[shout[doer:person[descriptor:many]][at:before][descriptor:two]]
 
 Happy people often shout.
-[stat:shout[doer:person[descriptor:happy]][descriptor:often]]
+[shout[doer:person[descriptor:happy]][descriptor:often]]
  -- missing difference between 'happy people often shout' and 'happy people shout often'
+ -- do it something like this?:
+[shout[doer:person[descriptor:happy][descriptor:often]]]
 
 The kitten jumped up.
-[stat:jump[doer:kitten[--?:definitiv]][time:now[relation:before]][--descriptor/location:up]]
+[jump[doer:kitten[descriptor:definite]][at:before][descriptor:up]]
 
 The kitten jumped onto the table.
-[stat:jump[doer:kitten[--?:definitiv]][time:now[relation:before]][--location:table[relation:--onto]]
+[jump[doer:kitten[descriptor:definite]][at:before][onto:table]]
 
 My little kitten walked away.
-[stat:walk[doer:kitten[--?:definitiv][descriptor:small][--nounverb:own[doer:me][--object:--who]]][time:now[relation:before]][location:away[relation:--to]]]
+[walk[doer:kitten[descriptor:definite][descriptor:small][owner:me]][at:before][to:away]]
 
 It's raining.
-[stat:rain[time:now][--uh]]
+[rain[around:now]]
 
 The rain came down.
 [stat:come[time:now[relation:before]][location:--down[relation:--to]]]

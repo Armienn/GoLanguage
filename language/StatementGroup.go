@@ -48,8 +48,34 @@ const (
 type Concept string
 
 type ConceptInfo struct {
-	Concept        Concept
-	ValidArguments []StatementType
+	Description    string
+	ValidArguments []Concept //beer, location-things and time-things are always valid
+}
+
+func Info(description string, validArguments ...Concept) *ConceptInfo {
+	result := new(ConceptInfo)
+	result.Description = description
+	result.ValidArguments = validArguments
+	return result
+}
+
+func GetCoreLanguage() map[Concept]ConceptInfo {
+	return map[Concept]ConceptInfo{
+		//object is always optional and is substituted by an undefined 'something' if not specified
+		//"be":    *Info("doer is object", "doer", "object"),
+		//"do":    *Info("doer does object", "doer", "object"),
+		"beer":       *Info("beer is one who is object", "object"),
+		"doer":       *Info("beer is one who does object", "object"),             //object must be doable (must have a possible doer)
+		"object":     *Info("beer is one who is the object of object", "object"), //object must have a possible object
+		"descriptor": *Info("beer is a manifestation of the concept of object", "object"),
+		"at":         *Info("beer is one who is at (near or in (either spacially or chronologically)) object", "object"),
+		"around":     *Info("beer is one who is spread around (either spacially or chronologically) object", "object"),
+		"before":     *Info("beer is one who is chronologically before object", "object"),
+		"after":      *Info("beer is one who is chronologically after object", "object"),
+		"now":        *Info("beer is one who is chronologically near/at/alongside object"),
+		"sun":        *Info("beer is the sun of belonger", "belonger"),
+		"shine":      *Info("doer shines on reciever with light source instrument", "doer", "reciever", "instrument"),
+	}
 }
 
 func GetSentences() []StatementGroup {
