@@ -31,6 +31,14 @@ func (info *ConceptInfo) HasArgument(argument Concept) bool {
 	return false
 }
 
+func NewStatementGroup(base Concept, relation Concept) *StatementGroup {
+	return &StatementGroup{base, nil, relation, make([]*StatementGroup, 0)}
+}
+
+func (statement *StatementGroup) AddDescriptor(descriptor *StatementGroup) {
+	statement.Descriptors = append(statement.Descriptors, descriptor)
+}
+
 func (group *StatementGroup) IsComplex() bool {
 	return group.CompoundConcept != nil
 }
@@ -38,10 +46,8 @@ func (group *StatementGroup) IsComplex() bool {
 func (group *StatementGroup) GetDescriptors(relations ...Concept) []*StatementGroup {
 	descriptors := make([]*StatementGroup, 0)
 	for _, descriptor := range group.Descriptors {
-		for _, relation := range relations {
-			if descriptor.Relation == relation {
-				descriptors = append(descriptors, descriptor)
-			}
+		if descriptor.HasRelation(relations...) {
+			descriptors = append(descriptors, descriptor)
 		}
 	}
 	return descriptors
@@ -50,15 +56,39 @@ func (group *StatementGroup) GetDescriptors(relations ...Concept) []*StatementGr
 func (group *StatementGroup) GetDescriptorsOf(descriptor Concept, relations ...Concept) []*StatementGroup {
 	descriptors := make([]*StatementGroup, 0)
 	for _, descr := range group.Descriptors {
-		if descr.SimpleConcept == descriptor {
-			for _, relation := range relations {
-				if descr.Relation == relation {
-					descriptors = append(descriptors, descr)
-				}
-			}
+		if descr.SimpleConcept == descriptor && descr.HasRelation(relations...) {
+			descriptors = append(descriptors, descr)
 		}
 	}
 	return descriptors
+}
+
+func (group *StatementGroup) HasRelation(relations ...Concept) bool {
+	for _, relation := range relations {
+		if group.Relation == relation {
+			return true
+		}
+	}
+	return false
+}
+
+func ContainsSame(listA []*StatementGroup, listB []*StatementGroup) bool {
+	length := len(listA)
+	if length != len(listB) {
+		return false
+	}
+	for _, elemA := range listA {
+		found := false
+		for _, elemB := range listB {
+			if elemA != elemB {
+				found = true
+			}
+		}
+		if !found {
+			return false
+		}
+	}
+	return true
 }
 
 func Info(description string, validArguments ...Concept) *ConceptInfo {
@@ -97,14 +127,6 @@ func GetSentences() []*StatementGroup {
 	sentence.AddDescriptor(NewStatementGroup("before", "now"))
 	sentences = append(sentences, sentence)
 	return sentences
-}
-
-func NewStatementGroup(base Concept, relation Concept) *StatementGroup {
-	return &StatementGroup{base, nil, relation, make([]*StatementGroup, 0)}
-}
-
-func (statement *StatementGroup) AddDescriptor(descriptor *StatementGroup) {
-	statement.Descriptors = append(statement.Descriptors, descriptor)
 }
 
 // concept - can have a do'er (event) or can have a be'er (property) - nope, scratch

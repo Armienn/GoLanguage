@@ -1,0 +1,6 @@
+--- FAIL: TestGetDescriptors (0.00s)
+	StatementGroup_test.go:78: { <nil>  [0xc042044640 0xc042044680]}.IsComplex([doer]) == [0xc042044640], want [0xc042044640]
+	StatementGroup_test.go:78: { <nil>  [0xc042044640 0xc042044680]}.IsComplex([beer]) == [0xc042044680], want [0xc042044680]
+FAIL
+exit status 1
+FAIL	github.com/Armienn/GoLanguage/language	0.024s
