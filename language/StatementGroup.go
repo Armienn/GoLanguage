@@ -35,14 +35,15 @@ func NewStatementGroup(base Concept, relation Concept) *StatementGroup {
 	return &StatementGroup{base, nil, relation, make([]*StatementGroup, 0)}
 }
 
-func (statement *StatementGroup) AddDescriptor(descriptor *StatementGroup) {
-	statement.Descriptors = append(statement.Descriptors, descriptor)
+func (group *StatementGroup) AddDescriptor(descriptor *StatementGroup) {
+	group.Descriptors = append(group.Descriptors, descriptor)
 }
 
 func (group *StatementGroup) IsComplex() bool {
 	return group.CompoundConcept != nil
 }
 
+//GetDescriptors returns the descriptors which are of one of the give relations
 func (group *StatementGroup) GetDescriptors(relations ...Concept) []*StatementGroup {
 	descriptors := make([]*StatementGroup, 0)
 	for _, descriptor := range group.Descriptors {
@@ -63,6 +64,7 @@ func (group *StatementGroup) GetDescriptorsOf(descriptor Concept, relations ...C
 	return descriptors
 }
 
+// HasRelation returns true if the groups relation equals one of the given concepts
 func (group *StatementGroup) HasRelation(relations ...Concept) bool {
 	for _, relation := range relations {
 		if group.Relation == relation {
@@ -72,7 +74,20 @@ func (group *StatementGroup) HasRelation(relations ...Concept) bool {
 	return false
 }
 
-func ContainsSame(listA []*StatementGroup, listB []*StatementGroup) bool {
+func (group *StatementGroup) String() string {
+	var core string
+	if group.IsComplex() {
+		core = group.CompoundConcept.String()
+	} else {
+		core = string(group.SimpleConcept)
+	}
+	for _, descriptor := range group.Descriptors {
+		core += descriptor.String()
+	}
+	return "[" + string(group.Relation) + ":" + core + "]"
+}
+
+func ContainsSameRelations(listA []*StatementGroup, listB []*StatementGroup) bool {
 	length := len(listA)
 	if length != len(listB) {
 		return false
@@ -80,7 +95,7 @@ func ContainsSame(listA []*StatementGroup, listB []*StatementGroup) bool {
 	for _, elemA := range listA {
 		found := false
 		for _, elemB := range listB {
-			if elemA != elemB {
+			if elemA.Relation == elemB.Relation {
 				found = true
 			}
 		}

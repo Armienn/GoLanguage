@@ -71,21 +71,29 @@ func TestGetDescriptors(t *testing.T) {
 	}{
 		{StatementGroup{"", nil, "", []*StatementGroup{groups[0], groups[1]}}, []Concept{"doer"}, []*StatementGroup{groups[0]}},
 		{StatementGroup{"", nil, "", []*StatementGroup{groups[0], groups[1]}}, []Concept{"beer"}, []*StatementGroup{groups[1]}},
+		{StatementGroup{"", nil, "", []*StatementGroup{groups[0], groups[1]}}, []Concept{"doer", "beer"}, []*StatementGroup{groups[0], groups[1]}},
+		{StatementGroup{"", nil, "", []*StatementGroup{groups[0], groups[1]}}, []Concept{"beer", "object"}, []*StatementGroup{groups[1]}},
+		{StatementGroup{"", nil, "", []*StatementGroup{groups[0], groups[1]}}, []Concept{"object"}, []*StatementGroup{}},
 	}
 	for _, c := range cases {
 		got := c.object.GetDescriptors(c.in...)
-		if !ContainsSame(got, c.want) {
+		if !ContainsSameRelations(got, c.want) {
 			t.Errorf("%v.GetDescriptors(%v) == %v, want %v", c.object, c.in, got, c.want)
 		}
 	}
 }
 
-func TestContainsSame(t *testing.T) {
+func TestContainsSameRelations(t *testing.T) {
 	cases := []struct {
 		inA  []*StatementGroup
 		inB  []*StatementGroup
 		want bool
 	}{
+		{[]*StatementGroup{
+			&StatementGroup{"", nil, "beer", nil},
+		}, []*StatementGroup{
+			&StatementGroup{"", nil, "beer", nil},
+		}, true},
 		{[]*StatementGroup{
 			&StatementGroup{"", nil, "doer", nil},
 			&StatementGroup{"", nil, "beer", nil},
@@ -96,6 +104,15 @@ func TestContainsSame(t *testing.T) {
 			&StatementGroup{"", nil, "object", nil},
 		}, true},
 		{[]*StatementGroup{
+			&StatementGroup{"", nil, "beer", nil},
+			&StatementGroup{"", nil, "doer", nil},
+			&StatementGroup{"", nil, "object", nil},
+		}, []*StatementGroup{
+			&StatementGroup{"", nil, "object", nil},
+			&StatementGroup{"", nil, "doer", nil},
+			&StatementGroup{"", nil, "beer", nil},
+		}, true},
+		{[]*StatementGroup{
 			&StatementGroup{"", nil, "doer", nil},
 			&StatementGroup{"", nil, "beer", nil},
 		}, []*StatementGroup{
@@ -103,11 +120,16 @@ func TestContainsSame(t *testing.T) {
 			&StatementGroup{"", nil, "beer", nil},
 			&StatementGroup{"", nil, "object", nil},
 		}, false},
+		{[]*StatementGroup{
+			&StatementGroup{"", nil, "beer", nil},
+		}, []*StatementGroup{
+			&StatementGroup{"", nil, "doer", nil},
+		}, false},
 	}
 	for _, c := range cases {
-		got := ContainsSame(c.inA, c.inB)
+		got := ContainsSameRelations(c.inA, c.inB)
 		if got != c.want {
-			t.Errorf("ContainsSame(%v, %v) == %v, want %v", c.inA, c.inB, got, c.want)
+			t.Errorf("ContainsSameRelations(%v, %v) == %v, want %v", c.inA, c.inB, got, c.want)
 		}
 	}
 }
