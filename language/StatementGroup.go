@@ -18,15 +18,44 @@ type ConceptInfo struct {
 	ValidArguments []Concept //beer, location-things and time-things are always valid
 }
 
+func (info *ConceptInfo) HasArgument(argument Concept) bool {
+	switch argument {
+	case "beer":
+		return true
+	}
+	for _, concept := range info.ValidArguments {
+		if concept == argument {
+			return true
+		}
+	}
+	return false
+}
+
 func (group *StatementGroup) IsComplex() bool {
 	return group.CompoundConcept != nil
 }
 
-func (group *StatementGroup) GetDescriptors(relation Concept) []*StatementGroup {
+func (group *StatementGroup) GetDescriptors(relations ...Concept) []*StatementGroup {
 	descriptors := make([]*StatementGroup, 0)
 	for _, descriptor := range group.Descriptors {
-		if descriptor.Relation == relation {
-			descriptors = append(descriptors, descriptor)
+		for _, relation := range relations {
+			if descriptor.Relation == relation {
+				descriptors = append(descriptors, descriptor)
+			}
+		}
+	}
+	return descriptors
+}
+
+func (group *StatementGroup) GetDescriptorsOf(descriptor Concept, relations ...Concept) []*StatementGroup {
+	descriptors := make([]*StatementGroup, 0)
+	for _, descr := range group.Descriptors {
+		if descr.SimpleConcept == descriptor {
+			for _, relation := range relations {
+				if descr.Relation == relation {
+					descriptors = append(descriptors, descr)
+				}
+			}
 		}
 	}
 	return descriptors
@@ -39,24 +68,24 @@ func Info(description string, validArguments ...Concept) *ConceptInfo {
 	return result
 }
 
-func GetCoreLanguage() map[Concept]ConceptInfo {
-	return map[Concept]ConceptInfo{
+func GetCoreLanguage() map[Concept]*ConceptInfo {
+	return map[Concept]*ConceptInfo{
 		//object is always optional and is substituted by an undefined 'something' if not specified
 		//"be":    *Info("doer is object", "doer", "object"),
 		//"do":    *Info("doer does object", "doer", "object"),
-		"beer":       *Info("beer is one who is object", "object"),
-		"doer":       *Info("beer is one who does object", "object"),                      //object must be doable (must have a possible doer)
-		"object":     *Info("beer is one who is the object of object", "object"),          //object must have a possible object
-		"descriptor": *Info("beer is a manifestation of the concept of object", "object"), //it is the beer of the concept... hm
-		"at":         *Info("beer is one who is at (near or in (either spacially or chronologically)) object", "object"),
-		"around":     *Info("beer is one who is spread around (either spacially or chronologically) object", "object"),
-		"before":     *Info("beer is one who is chronologically before object", "object"),
-		"after":      *Info("beer is one who is chronologically after object", "object"),
-		"now":        *Info("beer is one who is chronologically near/at/alongside object"),
-		"again":      *Info("beer is an event that reoccurs"),
-		"definite":   *Info("beer is one who is blabla todo"),
-		"sun":        *Info("beer is the sun of belonger", "belonger"),
-		"shine":      *Info("doer shines on reciever with light source instrument", "doer", "reciever", "instrument"),
+		"beer":       Info("beer is one who is object", "object"),
+		"doer":       Info("beer is one who does object", "object"),                      //object must be doable (must have a possible doer)
+		"object":     Info("beer is one who is the object of object", "object"),          //object must have a possible object
+		"descriptor": Info("beer is a manifestation of the concept of object", "object"), //it is the beer of the concept... hm
+		"at":         Info("beer is one who is at (near or in (either spacially or chronologically)) object", "object"),
+		"around":     Info("beer is one who is spread around (either spacially or chronologically) object", "object"),
+		"before":     Info("beer is one who is chronologically before object", "object"),
+		"after":      Info("beer is one who is chronologically after object", "object"),
+		"now":        Info("beer is one who is chronologically near/at/alongside object", "object"),
+		"again":      Info("beer is an event that reoccurs"),
+		"definite":   Info("beer is one who is blabla todo"),
+		"sun":        Info("beer is the sun of belonger", "belonger"),
+		"shine":      Info("doer shines on reciever with light source instrument", "doer", "reciever", "instrument"),
 	}
 }
 
@@ -65,6 +94,7 @@ func GetSentences() []*StatementGroup {
 	//a man eats a cat
 	sentence := NewStatementGroup("shine", "")
 	sentence.AddDescriptor(NewStatementGroup("sun", "doer"))
+	sentence.AddDescriptor(NewStatementGroup("before", "now"))
 	sentences = append(sentences, sentence)
 	return sentences
 }

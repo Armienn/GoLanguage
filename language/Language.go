@@ -6,7 +6,8 @@ type Translator interface {
 
 type Dansk struct {
 	Phonetics
-	Words map[Concept]DanishWord
+	Words      map[Concept]*DanishWord
+	BasicWords map[string]*DanishWord
 }
 
 type DanishWord struct {
@@ -15,11 +16,49 @@ type DanishWord struct {
 	OrdKlasse  string
 }
 
+type Udsagnsord struct {
+	Ord *DanishWord
+	Tid string
+}
+
+type Navneord struct {
+	Ord        *DanishWord
+	Flertal    bool
+	Bestemt    bool
+	Tillægsord []Tillægsord
+}
+
+type Tillægsord struct {
+	Ord *DanishWord
+}
+
 type DanishSentence struct {
+	core     map[Concept]*ConceptInfo
 	Language *Dansk
-	Verb     DanishWord
-	Subject  DanishWord
-	Object   DanishWord
+	Verb     Udsagnsord
+	Subject  Navneord
+	Object   Navneord
+}
+
+func (ord *Navneord) GetText() string {
+	if ord.Bestemt {
+		return "en " + ord.Ord.Ortography
+	}
+	return ord.Ord.Ortography + "en"
+}
+
+func (ord *Udsagnsord) GetText() string {
+	if ord.Tid == "nutid" {
+		return ord.Ord.Ortography + "r"
+	}
+	return ord.Ord.Ortography + "de"
+}
+
+func NewDanishSentence(language *Dansk) DanishSentence {
+	var sentence DanishSentence
+	sentence.core = GetCoreLanguage()
+	sentence.Language = language
+	return sentence
 }
 
 func (language *Dansk) Translate(sentence *StatementGroup) ([]Word, string) {
@@ -50,12 +89,15 @@ func (sentence *DanishSentence) ParseSubject(source *StatementGroup) {
 }
 
 func (sentence *DanishSentence) ParseComplexSubject(source *StatementGroup) {
-	sentence.Subject = sentence.Language.Words[source.SimpleConcept] // TODO: this is wrong
+	sentence.Subject = Navneord{}
+	sentence.Subject.Ord = sentence.Language.Words[source.SimpleConcept] // TODO: this is wrong
 	sentence.ParseDescriptors(source)
 }
 
 func (sentence *DanishSentence) ParseSimpleSubject(source *StatementGroup) {
-	sentence.Subject = sentence.Language.Words[source.SimpleConcept]
+	sentence.Subject = Navneord{}
+	sentence.Subject.Ord = sentence.Language.Words[source.SimpleConcept]
+	sentence.Subject.Bestemt = 0 < len(source.GetDescriptorsOf("definite", "descriptor"))
 	sentence.ParseDescriptors(source)
 }
 
@@ -72,22 +114,43 @@ func (sentence *DanishSentence) ParseVerb(source *StatementGroup) {
 }
 
 func (sentence *DanishSentence) ParseComplexVerb(source *StatementGroup) {
-	sentence.Verb = sentence.Language.Words[source.SimpleConcept] // TODO: this is wrong
+	sentence.Verb = Udsagnsord{}
+	sentence.Verb.Ord = sentence.Language.Words[source.SimpleConcept] // TODO: this is wrong
 	sentence.ParseDescriptors(source)
 }
 
 func (sentence *DanishSentence) ParseSimpleVerb(source *StatementGroup) {
-	sentence.Verb = sentence.Language.Words[source.SimpleConcept]
-	if sentence.Verb.OrdKlasse == "noun" {
-		sentence.Object = sentence.Verb
-		sentence.Verb = DanishWord{}
-		sentence.Verb.Ortography = "er"
+	sentence.Verb = Udsagnsord{}
+	if len(source.GetDescriptors("doer")) > 0 {
+		sentence.Verb.Ord = sentence.Language.Words[source.SimpleConcept]
+	} else if len(source.GetDescriptors("beer")) > 0 {
+		sentence.Verb.Ord = sentence.Language.BasicWords["er"]
+		sentence.Object = Navneord{}
+		sentence.Object.Ord = sentence.Language.Words[source.SimpleConcept]
+	} else {
+		//uh
 	}
+	sentence.Verb.Tid = sentence.GetTime(source)
 	sentence.ParseDescriptors(source)
+}
+
+func (sentence *DanishSentence) GetTime(source *StatementGroup) string {
+	timeDescriptors := source.GetDescriptorsOf("now", "at", "around", "after", "before")
+	if len(timeDescriptors) == 0 {
+		return "nutid"
+	}
+	switch timeDescriptors[0].Relation {
+	case "at", "around", "after":
+		return "nutid"
+	case "before":
+		return "datid"
+	default:
+		return "nutid" //TODO
+	}
 }
 
 func (sentence *DanishSentence) GetResult() ([]Word, string) {
 	words := []Word{}
-	text := sentence.Subject.Ortography + " " + sentence.Verb.Ortography
+	text := sentence.Subject.GetText() + " " + sentence.Verb.GetText()
 	return words, text
 }

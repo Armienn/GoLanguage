@@ -11,9 +11,9 @@ import (
 func main() {
 	dansk := language.Dansk{}
 	dansk.Phonetics = *language.GetDansk()
-	dansk.Words = map[language.Concept]language.DanishWord{
-		"sun":   language.DanishWord{language.Word{}, "sol", "noun"},
-		"shine": language.DanishWord{language.Word{}, "skinne", "verb"},
+	dansk.Words = map[language.Concept]*language.DanishWord{
+		"sun":   &language.DanishWord{language.Word{}, "sol", "noun"},
+		"shine": &language.DanishWord{language.Word{}, "skinne", "verb"},
 	}
 	sentences := language.GetSentences()
 	_, text := dansk.Translate(sentences[0])
