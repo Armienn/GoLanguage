@@ -8,7 +8,7 @@ type StatementGroup struct {
 	SimpleConcept   Concept
 	CompoundConcept *StatementGroup
 	Relation        Concept // statement, subject, object, vocative (vocated?), instrument, time, etc
-	Descriptors     []StatementGroup
+	Descriptors     []*StatementGroup
 }
 
 type Concept string
@@ -20,6 +20,16 @@ type ConceptInfo struct {
 
 func (group *StatementGroup) IsComplex() bool {
 	return group.CompoundConcept != nil
+}
+
+func (group *StatementGroup) GetDescriptors(relation Concept) []*StatementGroup {
+	descriptors := make([]*StatementGroup, 0)
+	for _, descriptor := range group.Descriptors {
+		if descriptor.Relation == relation {
+			descriptors = append(descriptors, descriptor)
+		}
+	}
+	return descriptors
 }
 
 func Info(description string, validArguments ...Concept) *ConceptInfo {
@@ -50,25 +60,21 @@ func GetCoreLanguage() map[Concept]ConceptInfo {
 	}
 }
 
-func GetSentences() []StatementGroup {
-	sentences := make([]StatementGroup, 0)
+func GetSentences() []*StatementGroup {
+	sentences := make([]*StatementGroup, 0)
 	//a man eats a cat
-	sentence := NewStatementGroup("eat", "")
-	sentence.AddDescriptor(NewStatementGroup("man", "doer"))
-	sentence.AddDescriptor(NewStatementGroup("cat", "object"))
-	sentences = append(sentences, *sentence)
-	//it rains
-	sentence = NewStatementGroup("rain", "")
-	sentences = append(sentences, *sentence)
+	sentence := NewStatementGroup("shine", "")
+	sentence.AddDescriptor(NewStatementGroup("sun", "doer"))
+	sentences = append(sentences, sentence)
 	return sentences
 }
 
 func NewStatementGroup(base Concept, relation Concept) *StatementGroup {
-	return &StatementGroup{base, nil, relation, make([]StatementGroup, 0)}
+	return &StatementGroup{base, nil, relation, make([]*StatementGroup, 0)}
 }
 
 func (statement *StatementGroup) AddDescriptor(descriptor *StatementGroup) {
-	statement.Descriptors = append(statement.Descriptors, *descriptor)
+	statement.Descriptors = append(statement.Descriptors, descriptor)
 }
 
 // concept - can have a do'er (event) or can have a be'er (property) - nope, scratch
