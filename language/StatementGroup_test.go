@@ -83,6 +83,44 @@ func TestGetDescriptors(t *testing.T) {
 	}
 }
 
+func TestGetDescriptorsOf(t *testing.T) {
+	groups := []*StatementGroup{
+		&StatementGroup{"mub", nil, "doer", nil},
+		&StatementGroup{"mub", nil, "beer", nil},
+		&StatementGroup{"mub", nil, "object", nil},
+		&StatementGroup{"vub", nil, "doer", nil},
+		&StatementGroup{"vub", nil, "beer", nil},
+		&StatementGroup{"vub", nil, "object", nil},
+	}
+	cases := []struct {
+		object StatementGroup
+		inA    Concept
+		inB    []Concept
+		want   []*StatementGroup
+	}{
+		{StatementGroup{"", nil, "", []*StatementGroup{groups[0], groups[1]}}, "mub", []Concept{"doer"}, []*StatementGroup{groups[0]}},
+		{StatementGroup{"", nil, "", []*StatementGroup{groups[0], groups[1]}}, "mub", []Concept{"beer"}, []*StatementGroup{groups[1]}},
+		{StatementGroup{"", nil, "", []*StatementGroup{groups[0], groups[1]}}, "mub", []Concept{"doer", "beer"}, []*StatementGroup{groups[0], groups[1]}},
+		{StatementGroup{"", nil, "", []*StatementGroup{groups[0], groups[1]}}, "mub", []Concept{"beer", "object"}, []*StatementGroup{groups[1]}},
+		{StatementGroup{"", nil, "", []*StatementGroup{groups[0], groups[1]}}, "mub", []Concept{"object"}, []*StatementGroup{}},
+		{StatementGroup{"", nil, "", []*StatementGroup{groups[0], groups[1]}}, "vub", []Concept{"doer"}, []*StatementGroup{}},
+		{StatementGroup{"", nil, "", []*StatementGroup{groups[0], groups[1]}}, "vub", []Concept{"beer"}, []*StatementGroup{}},
+		{StatementGroup{"", nil, "", []*StatementGroup{groups[0], groups[1]}}, "vub", []Concept{"doer", "beer"}, []*StatementGroup{}},
+		{StatementGroup{"", nil, "", []*StatementGroup{groups[0], groups[1]}}, "vub", []Concept{"beer", "object"}, []*StatementGroup{}},
+		{StatementGroup{"", nil, "", []*StatementGroup{groups[0], groups[1]}}, "vub", []Concept{"object"}, []*StatementGroup{}},
+		{StatementGroup{"", nil, "", []*StatementGroup{groups[3], groups[1]}}, "mub", []Concept{"doer"}, []*StatementGroup{}},
+		{StatementGroup{"", nil, "", []*StatementGroup{groups[4], groups[1]}}, "mub", []Concept{"beer"}, []*StatementGroup{groups[1]}},
+		{StatementGroup{"", nil, "", []*StatementGroup{groups[0], groups[3]}}, "mub", []Concept{"doer", "beer"}, []*StatementGroup{groups[0]}},
+		{StatementGroup{"", nil, "", []*StatementGroup{groups[3], groups[1]}}, "mub", []Concept{"beer", "object"}, []*StatementGroup{groups[1]}},
+	}
+	for _, c := range cases {
+		got := c.object.GetDescriptorsOf(c.inA, c.inB...)
+		if !ContainsSameRelations(got, c.want) {
+			t.Errorf("%v.GetDescriptorsOf(%v, %v) == %v, want %v", c.object, c.inA, c.inB, got, c.want)
+		}
+	}
+}
+
 func TestContainsSameRelations(t *testing.T) {
 	cases := []struct {
 		inA  []*StatementGroup

@@ -18,6 +18,7 @@ type ConceptInfo struct {
 	ValidArguments []Concept //beer, location-things and time-things are always valid
 }
 
+//HasArgument returns true if the ConceptInfo has the given concept as a possible argument
 func (info *ConceptInfo) HasArgument(argument Concept) bool {
 	switch argument {
 	case "beer":
@@ -31,14 +32,17 @@ func (info *ConceptInfo) HasArgument(argument Concept) bool {
 	return false
 }
 
+//NewStatementGroup returns a new group with a simple concept and no descriptors
 func NewStatementGroup(base Concept, relation Concept) *StatementGroup {
 	return &StatementGroup{base, nil, relation, make([]*StatementGroup, 0)}
 }
 
+//AddDescriptor adds a descriptor to the group
 func (group *StatementGroup) AddDescriptor(descriptor *StatementGroup) {
 	group.Descriptors = append(group.Descriptors, descriptor)
 }
 
+//IsComplex returns true if the group has a compound concept instead of a simple concept
 func (group *StatementGroup) IsComplex() bool {
 	return group.CompoundConcept != nil
 }
@@ -54,6 +58,7 @@ func (group *StatementGroup) GetDescriptors(relations ...Concept) []*StatementGr
 	return descriptors
 }
 
+//GetDescriptorsOf returns the descriptors of the given descriptor concept, which are of one of the give relations
 func (group *StatementGroup) GetDescriptorsOf(descriptor Concept, relations ...Concept) []*StatementGroup {
 	descriptors := make([]*StatementGroup, 0)
 	for _, descr := range group.Descriptors {
@@ -87,6 +92,7 @@ func (group *StatementGroup) String() string {
 	return "[" + string(group.Relation) + ":" + core + "]"
 }
 
+//ContainsSameRelations returns true if the given lists of groups have the same relations
 func ContainsSameRelations(listA []*StatementGroup, listB []*StatementGroup) bool {
 	length := len(listA)
 	if length != len(listB) {
