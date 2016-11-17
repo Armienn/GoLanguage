@@ -145,7 +145,7 @@ func GetSentences() []*StatementGroup {
 	//a man eats a cat
 	sentence := NewStatementGroup("shine", "")
 	sentence.AddDescriptor(NewStatementGroup("sun", "doer"))
-	sentence.AddDescriptor(NewStatementGroup("before", "now"))
+	sentence.AddDescriptor(NewStatementGroup("now", "before"))
 	sentences = append(sentences, sentence)
 	return sentences
 }

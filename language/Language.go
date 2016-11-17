@@ -1,5 +1,9 @@
 package language
 
+import (
+	"fmt"
+)
+
 type Translator interface {
 	Translate(*StatementGroup) []Word
 }
@@ -42,9 +46,9 @@ type DanishSentence struct {
 
 func (ord *Navneord) GetText() string {
 	if ord.Bestemt {
-		return "en " + ord.Ord.Ortography
+		return ord.Ord.Ortography + "en"
 	}
-	return ord.Ord.Ortography + "en"
+	return "en " + ord.Ord.Ortography
 }
 
 func (ord *Udsagnsord) GetText() string {
@@ -130,7 +134,10 @@ func (sentence *DanishSentence) ParseSimpleVerb(source *StatementGroup) {
 	} else {
 		//uh
 	}
+	fmt.Println("Parsing verb in")
+	fmt.Println(source)
 	sentence.Verb.Tid = sentence.GetTime(source)
+	fmt.Println("Got time " + sentence.Verb.Tid)
 	sentence.ParseDescriptors(source)
 }
 
