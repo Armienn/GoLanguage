@@ -171,3 +171,32 @@ func TestContainsSameRelations(t *testing.T) {
 		}
 	}
 }
+
+func TestSplitByBraces(t *testing.T) {
+	cases := []struct {
+		in   string
+		want []string
+	}{
+		{"sun", []string{"sun"}},
+		{"sun[shine]", []string{"sun", "shine"}},
+		{"[shine][sun]", []string{"shine", "sun"}},
+		{"[[shine][sun]]", []string{"[shine][sun]"}},
+		{"sun[shine][now]", []string{"sun", "shine", "now"}},
+		{"sun[shine[mub][wub]][now]", []string{"sun", "shine[mub][wub]", "now"}},
+	}
+	for _, c := range cases {
+		got := SplitByBraces(c.in, '[', ']')
+		success := len(got) == len(c.want)
+		if success {
+			for i := range got {
+				if got[i] != c.want[i] {
+					success = false
+					break
+				}
+			}
+		}
+		if !success {
+			t.Errorf("SplitByBraces(%v,'[',']') == %v, want %v", c.in, got, c.want)
+		}
+	}
+}

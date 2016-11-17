@@ -16,8 +16,10 @@ func main() {
 		"shine": &language.DanishWord{language.Word{}, "skinne", "verb"},
 	}
 	sentences := language.GetSentences()
-	_, text := dansk.Translate(sentences[0])
-	fmt.Println(text)
+	for _, sentence := range sentences {
+		_, text := dansk.Translate(sentence)
+		fmt.Println(text)
+	}
 }
 
 func printAlphabet(lang *language.Phonetics, representation *language.Phonetics) {

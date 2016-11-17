@@ -37,6 +37,43 @@ func NewStatementGroup(base Concept, relation Concept) *StatementGroup {
 	return &StatementGroup{base, nil, relation, make([]*StatementGroup, 0)}
 }
 
+/*func StatementGroupFromString(source string) *StatementGroup {
+	source = strings.TrimSpace(source)
+	if strings.HasPrefix(source, "[") {
+		source = source[1 : len(source)-1]
+		source = strings.TrimSpace(source)
+	}
+	strings.spl
+	return &StatementGroup{base, nil, relation, make([]*StatementGroup, 0)}
+}*/
+
+func SplitByBraces(source string, start rune, end rune) []string {
+	splits := make([]string, 0)
+	startIndex := 0
+	level := 0
+	for i, c := range source {
+		if c == start {
+			if level == 0 {
+				if i != startIndex {
+					splits = append(splits, source[startIndex:i])
+				}
+				startIndex = i + 1
+			}
+			level++
+		} else if c == end {
+			level--
+			if level == 0 {
+				splits = append(splits, source[startIndex:i])
+				startIndex = i + 1
+			}
+		}
+	}
+	if startIndex != len(source) {
+		splits = append(splits, source[startIndex:])
+	}
+	return splits
+}
+
 //AddDescriptor adds a descriptor to the group
 func (group *StatementGroup) AddDescriptor(descriptor *StatementGroup) {
 	group.Descriptors = append(group.Descriptors, descriptor)
@@ -146,6 +183,10 @@ func GetSentences() []*StatementGroup {
 	sentence := NewStatementGroup("shine", "")
 	sentence.AddDescriptor(NewStatementGroup("sun", "doer"))
 	sentence.AddDescriptor(NewStatementGroup("now", "before"))
+	sentences = append(sentences, sentence)
+	sentence = NewStatementGroup("shine", "")
+	sentence.AddDescriptor(NewStatementGroup("sun", "doer"))
+	sentence.AddDescriptor(NewStatementGroup("now", "at"))
 	sentences = append(sentences, sentence)
 	return sentences
 }

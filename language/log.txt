@@ -1,26 +1,10 @@
-starting
-[doer]
-0
-[doer:]
-appending
-[[doer:]]
-1
-[beer:]
-ending
-[[doer:]]
-starting
-[beer]
-0
-[doer:]
-1
-[beer:]
-appending
-[[beer:]]
-ending
-[[beer:]]
---- FAIL: TestGetDescriptors (0.00s)
-	StatementGroup_test.go:78: { <nil>  [[doer:] [beer:]]}.GetDescriptors([doer]) == [[doer:]], want [[doer:]]
-	StatementGroup_test.go:78: { <nil>  [[doer:] [beer:]]}.GetDescriptors([beer]) == [[beer:]], want [[beer:]]
-FAIL
-exit status 1
-FAIL	github.com/Armienn/GoLanguage/language	0.022s
+[:[before:now]]
+[:[after:now]]
+[:[at:now]]
+[:[around:now]]
+[:[doer:sun][before:now]]
+[:[doer:sun][after:now]]
+[:[doer:sun][at:now]]
+[:[doer:sun][around:now]]
+PASS
+ok  	github.com/Armienn/GoLanguage/language	0.025s

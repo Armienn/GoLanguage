@@ -1,9 +1,5 @@
 package language
 
-import (
-	"fmt"
-)
-
 type Translator interface {
 	Translate(*StatementGroup) []Word
 }
@@ -134,10 +130,7 @@ func (sentence *DanishSentence) ParseSimpleVerb(source *StatementGroup) {
 	} else {
 		//uh
 	}
-	fmt.Println("Parsing verb in")
-	fmt.Println(source)
 	sentence.Verb.Tid = sentence.GetTime(source)
-	fmt.Println("Got time " + sentence.Verb.Tid)
 	sentence.ParseDescriptors(source)
 }
 
