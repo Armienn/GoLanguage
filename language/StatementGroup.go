@@ -55,7 +55,7 @@ func StatementGroupFromString(source string) *StatementGroup {
 	} else {
 		mub := strings.Split(parts[0], ":")
 		if len(mub) == 1 {
-			group.Relation = "Descriptor"
+			group.Relation = "descriptor"
 			group.SimpleConcept = Concept(mub[0])
 		} else {
 			group.Relation = Concept(mub[0])
@@ -205,17 +205,14 @@ func GetCoreLanguage() map[Concept]*ConceptInfo {
 }
 
 func GetSentences() []*StatementGroup {
-	sentences := make([]*StatementGroup, 0)
-	//a man eats a cat
-	sentence := NewStatementGroup("shine", "")
-	sentence.AddDescriptor(NewStatementGroup("sun", "doer"))
-	sentence.AddDescriptor(NewStatementGroup("now", "before"))
-	sentences = append(sentences, sentence)
-	sentence = NewStatementGroup("shine", "")
-	sentence.AddDescriptor(NewStatementGroup("sun", "doer"))
-	sentence.AddDescriptor(NewStatementGroup("now", "at"))
-	sentences = append(sentences, sentence)
-	return sentences
+	return []*StatementGroup{
+		StatementGroupFromString("[:shine[doer:sun]]"),
+		StatementGroupFromString("[:shine[doer:sun][before:now]]"),
+		StatementGroupFromString("[:shine[doer:sun][at:now]]"),
+		StatementGroupFromString("[:shine[doer:sun[definite]]]"),
+		StatementGroupFromString("[:shine[doer:sun[definite]][before:now]]"),
+		StatementGroupFromString("[:shine[doer:sun[definite]][at:now]]"),
+	}
 }
 
 // concept - can have a do'er (event) or can have a be'er (property) - nope, scratch
