@@ -1,5 +1,9 @@
 package language
 
+import (
+	"strings"
+)
+
 // The core representation of a sentence/statement. The will be a core language,
 // which directly corresponds to this structure, and other languages can then be
 // collections of arbitrary word groups along with rules for how to translate
@@ -37,16 +41,39 @@ func NewStatementGroup(base Concept, relation Concept) *StatementGroup {
 	return &StatementGroup{base, nil, relation, make([]*StatementGroup, 0)}
 }
 
-/*func StatementGroupFromString(source string) *StatementGroup {
+//StatementGroupFromString parses and returns a StatementGroup from the given string
+func StatementGroupFromString(source string) *StatementGroup {
+	group := &StatementGroup{}
 	source = strings.TrimSpace(source)
 	if strings.HasPrefix(source, "[") {
-		source = source[1 : len(source)-1]
-		source = strings.TrimSpace(source)
+		source = SplitByBraces(source, '[', ']')[0]
 	}
-	strings.spl
-	return &StatementGroup{base, nil, relation, make([]*StatementGroup, 0)}
-}*/
+	parts := SplitByBraces(source, '[', ']')
+	if strings.HasSuffix(parts[0], ":") {
+		group.Relation = Concept(strings.TrimSuffix(parts[0], ":"))
+		group.CompoundConcept = StatementGroupFromString(parts[1])
+	} else {
+		mub := strings.Split(parts[0], ":")
+		if len(mub) == 1 {
+			group.Relation = "Descriptor"
+			group.SimpleConcept = Concept(mub[0])
+		} else {
+			group.Relation = Concept(mub[0])
+			group.SimpleConcept = Concept(mub[1])
+		}
+	}
+	start := 1
+	if group.IsComplex() {
+		start = 2
+	}
+	group.Descriptors = make([]*StatementGroup, len(parts)-start)
+	for i := 0; i < len(parts)-start; i++ {
+		group.Descriptors[i] = StatementGroupFromString(parts[i+start])
+	}
+	return group
+}
 
+//SplitByBraces splits the given string into substrings based on the given start and end runes
 func SplitByBraces(source string, start rune, end rune) []string {
 	splits := make([]string, 0)
 	startIndex := 0
@@ -72,6 +99,19 @@ func SplitByBraces(source string, start rune, end rune) []string {
 		splits = append(splits, source[startIndex:])
 	}
 	return splits
+}
+
+func (group *StatementGroup) String() string {
+	var core string
+	if group.IsComplex() {
+		core = group.CompoundConcept.String()
+	} else {
+		core = string(group.SimpleConcept)
+	}
+	for _, descriptor := range group.Descriptors {
+		core += descriptor.String()
+	}
+	return "[" + string(group.Relation) + ":" + core + "]"
 }
 
 //AddDescriptor adds a descriptor to the group
@@ -114,19 +154,6 @@ func (group *StatementGroup) HasRelation(relations ...Concept) bool {
 		}
 	}
 	return false
-}
-
-func (group *StatementGroup) String() string {
-	var core string
-	if group.IsComplex() {
-		core = group.CompoundConcept.String()
-	} else {
-		core = string(group.SimpleConcept)
-	}
-	for _, descriptor := range group.Descriptors {
-		core += descriptor.String()
-	}
-	return "[" + string(group.Relation) + ":" + core + "]"
 }
 
 //ContainsSameRelations returns true if the given lists of groups have the same relations

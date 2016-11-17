@@ -172,6 +172,26 @@ func TestContainsSameRelations(t *testing.T) {
 	}
 }
 
+func TestStatementGroupFromString(t *testing.T) {
+	cases := []struct {
+		in string
+	}{
+		{"[stat:shine]"},
+		{"[stat:shine[doer:sun]]"},
+		{"[:shine[doer:sun]]"},
+		{"[stat:[mub:shine][doer:sun]]"},
+		{"[stat:shine[doer:sun][before:now]]"},
+		{"[stat:shine[doer:sun[descriptor:awesome]][before:now]]"},
+		{"[stat:[mub:shine][doer:sun[descriptor:awesome]][before:now]]"},
+	}
+	for _, c := range cases {
+		got := StatementGroupFromString(c.in)
+		if got.String() != c.in {
+			t.Errorf("StatementGroupFromString(%v) == %v, want %v", c.in, got, c.in)
+		}
+	}
+}
+
 func TestSplitByBraces(t *testing.T) {
 	cases := []struct {
 		in   string
