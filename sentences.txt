@@ -2,62 +2,62 @@ Sing in me, Muse, and through me tell the story
 [sing[doer:Muse][in:me][manner:command] [and:tell[doer:Muse?][instrument:me][object?:story[descriptor:definite]][manner:command]]]
 
 The sun shines.
-[shine[doer:sun]]
-[shine[doer:sun][at:now]]
+[:shine[doer:sun]]
+[:shine[doer:sun][at:now]]
 
 The sun is shining.
-[shine[doer:sun][around:now]
+[:shine[doer:sun][around:now]
 
 The sun shone.
-[shine[doer:sun][at:before]]
+[:shine[doer:sun][at:before]]
 
 The sun will shine.
-[shine[doer:sun][at:after]]
+[:shine[doer:sun][at:after]]
 
 The sun has been shining.
-[shine[doer:sun][around:before]]
+[:shine[doer:sun][around:before]]
 
 The sun is shining again.
-[shine[doer:sun][around:now][descriptor:again]]
+[:shine[doer:sun][around:now][descriptor:again]]
 
 The sun will shine tomorrow.
-[shine[doer:sun][at:day[after:now][descriptor:definite]]
+[:shine[doer:sun][at:day[after:now][descriptor:definite]]
 
 The sun shines brightly.
-[shine[doer:sun][at:now][descriptor:bright]]
+[:shine[doer:sun][at:now][descriptor:bright]]
 
 The bright sun shines.
-[shine[doer:sun[descriptor:bright]][at:now]]
+[:shine[doer:sun[descriptor:bright]][at:now]]
 
 The sun is rising now.
-[rise[doer:sun][around:now]]
+[:rise[doer:sun][around:now]]
 
 All the people shouted.
-[shout[doer:person[descriptor:all]][at:before]]
+[:shout[doer:person[descriptor:all]][at:before]]
 
 Some of the people shouted.
-[shout[doer:person[descriptor:some]][at:before]]
+[:shout[doer:person[descriptor:some]][at:before]]
 
 Many of the people shouted twice.
-[shout[doer:person[descriptor:many]][at:before][descriptor:two]]
+[:shout[doer:person[descriptor:many]][at:before][descriptor:two]]
 
 Happy people often shout.
-[shout[doer:person[descriptor:happy]][descriptor:often]]
+[:shout[doer:person[descriptor:happy]][descriptor:often]]
  -- missing difference between 'happy people often shout' and 'happy people shout often'
  -- do it something like this?:
-[shout[doer:person[descriptor:happy][descriptor:often]]]
+[:shout[doer:person[descriptor:happy][descriptor:often]]]
 
 The kitten jumped up.
-[jump[doer:kitten[descriptor:definite]][at:before][descriptor:up]]
+[:jump[doer:kitten[descriptor:definite]][at:before][descriptor:up]]
 
 The kitten jumped onto the table.
-[jump[doer:kitten[descriptor:definite]][at:before][onto:table]]
+[:jump[doer:kitten[descriptor:definite]][at:before][onto:table]]
 
 My little kitten walked away.
-[walk[doer:kitten[descriptor:definite][descriptor:small][owner:me]][at:before][to:away]]
+[:walk[doer:kitten[descriptor:definite][descriptor:small][owner:me]][at:before][to:away]]
 
 It's raining.
-[rain[around:now]]
+[:rain[around:now]]
 
 The rain came down.
 [stat:come[time:now[relation:before]][location:--down[relation:--to]]]

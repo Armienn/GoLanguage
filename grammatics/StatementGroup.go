@@ -210,18 +210,33 @@ func GetCoreLanguage() map[Concept]*ConceptInfo {
 
 func GetSentences() []*Statement {
 	return []*Statement{
-		StatementFromString("[:shine[doer:sun]]"),
 		StatementFromString("[:shine[doer:sun][at:before]]"),
 		StatementFromString("[:shine[doer:sun][at:now]]"),
-		StatementFromString("[:shine[doer:sun[definite]]]"),
 		StatementFromString("[:shine[doer:sun[definite]][at:before]]"),
 		StatementFromString("[:shine[doer:sun[definite]][at:now]]"),
-		StatementFromString("[:shine[doer:sun[amount:several]]]"),
 		StatementFromString("[:shine[doer:sun[amount:several]][at:before]]"),
 		StatementFromString("[:shine[doer:sun[amount:several]][at:now]]"),
-		StatementFromString("[:shine[doer:sun[definite][amount:several]]]"),
 		StatementFromString("[:shine[doer:sun[definite][amount:several]][at:before]]"),
 		StatementFromString("[:shine[doer:sun[definite][amount:several]][at:now]]"),
+		StatementFromString("[:shine[doer:sun]"),
+		StatementFromString("[:shine[doer:sun][around:now]"),
+		StatementFromString("[:shine[doer:sun][at:before]]"),
+		StatementFromString("[:shine[doer:sun][at:after]]"),
+		StatementFromString("[:shine[doer:sun][around:before]]"),
+		StatementFromString("[:shine[doer:sun][around:now][descriptor:again]]"),
+		StatementFromString("[:shine[doer:sun][at:day[after:now][descriptor:definite]]"),
+		StatementFromString("[:shine[doer:sun][at:now][descriptor:bright]]"),
+		StatementFromString("[:shine[doer:sun[descriptor:bright]][at:now]]"),
+		StatementFromString("[:rise[doer:sun][around:now]]"),
+		StatementFromString("[:shout[doer:person[descriptor:all]][at:before]]"),
+		StatementFromString("[:shout[doer:person[descriptor:some]][at:before]]"),
+		StatementFromString("[:shout[doer:person[descriptor:many]][at:before][descriptor:two]]"),
+		StatementFromString("[:shout[doer:person[descriptor:happy]][descriptor:often]]"),
+		StatementFromString("[:shout[doer:person[descriptor:happy][descriptor:often]]]"),
+		StatementFromString("[:jump[doer:kitten[descriptor:definite]][at:before][descriptor:up]]"),
+		StatementFromString("[:jump[doer:kitten[descriptor:definite]][at:before][onto:table]]"),
+		StatementFromString("[:walk[doer:kitten[descriptor:definite][descriptor:small][owner:me]][at:before][to:away]]"),
+		StatementFromString("[:rain[around:now]]"),
 	}
 }
 

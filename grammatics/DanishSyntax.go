@@ -149,6 +149,7 @@ func (sentence *DanishSentence) ParseSimpleVerb(source *Statement) {
 		sentence.Object.Ord = word
 	} else {
 		//uh
+		sentence.Verb.Ord = sentence.Language.Missing
 	}
 	sentence.Verb.Tid = sentence.GetTime(source)
 	sentence.ParseDescriptors(source)
@@ -163,7 +164,9 @@ func (sentence *DanishSentence) GetTime(source *Statement) string {
 
 func (sentence *DanishSentence) GetResult() []WordRepresenter {
 	words := make([]WordRepresenter, 0)
-	words = append(words, sentence.Subject.Ord.NavneordRepresentation(&sentence.Subject)...)
+	if sentence.Subject.Ord != nil {
+		words = append(words, sentence.Subject.Ord.NavneordRepresentation(&sentence.Subject)...)
+	}
 	words = append(words, sentence.Verb.Ord.UdsagnsordRepresentation(&sentence.Verb)...)
 	return words
 }
