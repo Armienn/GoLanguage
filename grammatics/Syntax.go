@@ -1,7 +1,7 @@
 package grammatics
 
 type Translater interface {
-	Translate(*StatementGroup) []WordRepresenter
+	Translate(*Statement) []WordRepresenter
 }
 
 type WordRepresenter interface {

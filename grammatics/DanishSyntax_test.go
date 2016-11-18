@@ -40,17 +40,17 @@ func TestUdsagnsordGetText(t *testing.T) {
 func TestGetTime(t *testing.T) {
 	cases := []struct {
 		object DanishSentence
-		in     StatementGroup
+		in     Statement
 		want   string
 	}{
-		{DanishSentence{}, StatementGroup{"", nil, "", []*StatementGroup{NewStatementGroup("now", "before")}}, "datid"},
-		{DanishSentence{}, StatementGroup{"", nil, "", []*StatementGroup{NewStatementGroup("now", "after")}}, "nutid"},
-		{DanishSentence{}, StatementGroup{"", nil, "", []*StatementGroup{NewStatementGroup("now", "at")}}, "nutid"},
-		{DanishSentence{}, StatementGroup{"", nil, "", []*StatementGroup{NewStatementGroup("now", "around")}}, "nutid"},
-		{DanishSentence{}, StatementGroup{"", nil, "", []*StatementGroup{NewStatementGroup("sun", "doer"), NewStatementGroup("now", "before")}}, "datid"},
-		{DanishSentence{}, StatementGroup{"", nil, "", []*StatementGroup{NewStatementGroup("sun", "doer"), NewStatementGroup("now", "after")}}, "nutid"},
-		{DanishSentence{}, StatementGroup{"", nil, "", []*StatementGroup{NewStatementGroup("sun", "doer"), NewStatementGroup("now", "at")}}, "nutid"},
-		{DanishSentence{}, StatementGroup{"", nil, "", []*StatementGroup{NewStatementGroup("sun", "doer"), NewStatementGroup("now", "around")}}, "nutid"},
+		{DanishSentence{}, Statement{"", nil, "", []*Statement{NewStatement("now", "before")}}, "datid"},
+		{DanishSentence{}, Statement{"", nil, "", []*Statement{NewStatement("now", "after")}}, "nutid"},
+		{DanishSentence{}, Statement{"", nil, "", []*Statement{NewStatement("now", "at")}}, "nutid"},
+		{DanishSentence{}, Statement{"", nil, "", []*Statement{NewStatement("now", "around")}}, "nutid"},
+		{DanishSentence{}, Statement{"", nil, "", []*Statement{NewStatement("sun", "doer"), NewStatement("now", "before")}}, "datid"},
+		{DanishSentence{}, Statement{"", nil, "", []*Statement{NewStatement("sun", "doer"), NewStatement("now", "after")}}, "nutid"},
+		{DanishSentence{}, Statement{"", nil, "", []*Statement{NewStatement("sun", "doer"), NewStatement("now", "at")}}, "nutid"},
+		{DanishSentence{}, Statement{"", nil, "", []*Statement{NewStatement("sun", "doer"), NewStatement("now", "around")}}, "nutid"},
 	}
 	for _, c := range cases {
 		fmt.Println(&c.in)

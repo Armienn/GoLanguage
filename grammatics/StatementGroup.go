@@ -8,11 +8,11 @@ import (
 // which directly corresponds to this structure, and other languages can then be
 // collections of arbitrary word groups along with rules for how to translate
 // from the core language
-type StatementGroup struct {
+type Statement struct {
 	SimpleConcept   Concept
-	CompoundConcept *StatementGroup
+	CompoundConcept *Statement
 	Relation        Concept // statement, subject, object, vocative (vocated?), instrument, time, etc
-	Descriptors     []*StatementGroup
+	Descriptors     []*Statement
 }
 
 type Concept string
@@ -36,14 +36,14 @@ func (info *ConceptInfo) HasArgument(argument Concept) bool {
 	return false
 }
 
-//NewStatementGroup returns a new group with a simple concept and no descriptors
-func NewStatementGroup(base Concept, relation Concept) *StatementGroup {
-	return &StatementGroup{base, nil, relation, make([]*StatementGroup, 0)}
+//NewStatement returns a new group with a simple concept and no descriptors
+func NewStatement(base Concept, relation Concept) *Statement {
+	return &Statement{base, nil, relation, make([]*Statement, 0)}
 }
 
-//StatementGroupFromString parses and returns a StatementGroup from the given string
-func StatementGroupFromString(source string) *StatementGroup {
-	group := &StatementGroup{}
+//StatementFromString parses and returns a Statement from the given string
+func StatementFromString(source string) *Statement {
+	group := &Statement{}
 	source = strings.TrimSpace(source)
 	if strings.HasPrefix(source, "[") {
 		source = SplitByBraces(source, '[', ']')[0]
@@ -51,7 +51,7 @@ func StatementGroupFromString(source string) *StatementGroup {
 	parts := SplitByBraces(source, '[', ']')
 	if strings.HasSuffix(parts[0], ":") {
 		group.Relation = Concept(strings.TrimSuffix(parts[0], ":"))
-		group.CompoundConcept = StatementGroupFromString(parts[1])
+		group.CompoundConcept = StatementFromString(parts[1])
 	} else {
 		mub := strings.Split(parts[0], ":")
 		if len(mub) == 1 {
@@ -66,9 +66,9 @@ func StatementGroupFromString(source string) *StatementGroup {
 	if group.IsComplex() {
 		start = 2
 	}
-	group.Descriptors = make([]*StatementGroup, len(parts)-start)
+	group.Descriptors = make([]*Statement, len(parts)-start)
 	for i := 0; i < len(parts)-start; i++ {
-		group.Descriptors[i] = StatementGroupFromString(parts[i+start])
+		group.Descriptors[i] = StatementFromString(parts[i+start])
 	}
 	return group
 }
@@ -101,7 +101,7 @@ func SplitByBraces(source string, start rune, end rune) []string {
 	return splits
 }
 
-func (group *StatementGroup) String() string {
+func (group *Statement) String() string {
 	var core string
 	if group.IsComplex() {
 		core = group.CompoundConcept.String()
@@ -115,18 +115,18 @@ func (group *StatementGroup) String() string {
 }
 
 //AddDescriptor adds a descriptor to the group
-func (group *StatementGroup) AddDescriptor(descriptor *StatementGroup) {
+func (group *Statement) AddDescriptor(descriptor *Statement) {
 	group.Descriptors = append(group.Descriptors, descriptor)
 }
 
 //IsComplex returns true if the group has a compound concept instead of a simple concept
-func (group *StatementGroup) IsComplex() bool {
+func (group *Statement) IsComplex() bool {
 	return group.CompoundConcept != nil
 }
 
 //GetDescriptors returns the descriptors which are of one of the give relations
-func (group *StatementGroup) GetDescriptors(relations ...Concept) []*StatementGroup {
-	descriptors := make([]*StatementGroup, 0)
+func (group *Statement) GetDescriptors(relations ...Concept) []*Statement {
+	descriptors := make([]*Statement, 0)
 	for _, descriptor := range group.Descriptors {
 		if descriptor.HasRelation(relations...) {
 			descriptors = append(descriptors, descriptor)
@@ -136,8 +136,8 @@ func (group *StatementGroup) GetDescriptors(relations ...Concept) []*StatementGr
 }
 
 //GetDescriptorsOf returns the descriptors of the given descriptor concept, which are of one of the give relations
-func (group *StatementGroup) GetDescriptorsOf(descriptor Concept, relations ...Concept) []*StatementGroup {
-	descriptors := make([]*StatementGroup, 0)
+func (group *Statement) GetDescriptorsOf(descriptor Concept, relations ...Concept) []*Statement {
+	descriptors := make([]*Statement, 0)
 	for _, descr := range group.Descriptors {
 		if descr.SimpleConcept == descriptor && descr.HasRelation(relations...) {
 			descriptors = append(descriptors, descr)
@@ -147,7 +147,7 @@ func (group *StatementGroup) GetDescriptorsOf(descriptor Concept, relations ...C
 }
 
 // HasRelation returns true if the groups relation equals one of the given concepts
-func (group *StatementGroup) HasRelation(relations ...Concept) bool {
+func (group *Statement) HasRelation(relations ...Concept) bool {
 	for _, relation := range relations {
 		if group.Relation == relation {
 			return true
@@ -157,7 +157,7 @@ func (group *StatementGroup) HasRelation(relations ...Concept) bool {
 }
 
 //ContainsSameRelations returns true if the given lists of groups have the same relations
-func ContainsSameRelations(listA []*StatementGroup, listB []*StatementGroup) bool {
+func ContainsSameRelations(listA []*Statement, listB []*Statement) bool {
 	length := len(listA)
 	if length != len(listB) {
 		return false
@@ -204,14 +204,14 @@ func GetCoreLanguage() map[Concept]*ConceptInfo {
 	}
 }
 
-func GetSentences() []*StatementGroup {
-	return []*StatementGroup{
-		StatementGroupFromString("[:shine[doer:sun]]"),
-		StatementGroupFromString("[:shine[doer:sun][before:now]]"),
-		StatementGroupFromString("[:shine[doer:sun][at:now]]"),
-		StatementGroupFromString("[:shine[doer:sun[definite]]]"),
-		StatementGroupFromString("[:shine[doer:sun[definite]][before:now]]"),
-		StatementGroupFromString("[:shine[doer:sun[definite]][at:now]]"),
+func GetSentences() []*Statement {
+	return []*Statement{
+		StatementFromString("[:shine[doer:sun]]"),
+		StatementFromString("[:shine[doer:sun][before:now]]"),
+		StatementFromString("[:shine[doer:sun][at:now]]"),
+		StatementFromString("[:shine[doer:sun[definite]]]"),
+		StatementFromString("[:shine[doer:sun[definite]][before:now]]"),
+		StatementFromString("[:shine[doer:sun[definite]][at:now]]"),
 	}
 }
 
