@@ -115,18 +115,10 @@ func (sentence *DanishSentence) ParseSimpleVerb(source *Statement) {
 }
 
 func (sentence *DanishSentence) GetTime(source *Statement) string {
-	timeDescriptors := source.GetDescriptorsOf("now", "at", "around", "after", "before")
-	if len(timeDescriptors) == 0 {
-		return "nutid"
-	}
-	switch timeDescriptors[0].Relation {
-	case "at", "around", "after":
-		return "nutid"
-	case "before":
+	if len(source.GetDescriptorsOf("before", "at")) > 0 {
 		return "datid"
-	default:
-		return "nutid" //TODO
 	}
+	return "nutid"
 }
 
 func (sentence *DanishSentence) GetResult() []WordRepresenter {

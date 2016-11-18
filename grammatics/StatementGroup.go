@@ -196,7 +196,7 @@ func GetCoreLanguage() map[Concept]*ConceptInfo {
 		"around":     Info("beer is one who is spread around (either spacially or chronologically) object", "object"),
 		"before":     Info("beer is one who is chronologically before object", "object"),
 		"after":      Info("beer is one who is chronologically after object", "object"),
-		"now":        Info("beer is one who is chronologically near/at/alongside object", "object"),
+		"now":        Info("beer is one who is chronologically near/at/alongside object", "object"), //this is the same as 'at'? No, at is a relation in any dimension, while this is specifically related to time
 		"again":      Info("beer is an event that reoccurs"),
 		"definite":   Info("beer is one who is blabla todo"),
 		"sun":        Info("beer is the sun of belonger", "belonger"),
@@ -207,10 +207,10 @@ func GetCoreLanguage() map[Concept]*ConceptInfo {
 func GetSentences() []*Statement {
 	return []*Statement{
 		StatementFromString("[:shine[doer:sun]]"),
-		StatementFromString("[:shine[doer:sun][before:now]]"),
+		StatementFromString("[:shine[doer:sun][at:before]]"),
 		StatementFromString("[:shine[doer:sun][at:now]]"),
 		StatementFromString("[:shine[doer:sun[definite]]]"),
-		StatementFromString("[:shine[doer:sun[definite]][before:now]]"),
+		StatementFromString("[:shine[doer:sun[definite]][at:before]]"),
 		StatementFromString("[:shine[doer:sun[definite]][at:now]]"),
 	}
 }
