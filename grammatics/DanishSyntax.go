@@ -1,32 +1,14 @@
 package grammatics
 
-type Translater interface {
-	Translate(*g.StatementGroup) []WordRepresenter
-}
-
-type WordRepresenter interface {
-	Representation() interface{}
-}
-
 type DanishWordRepresenter interface {
 	NavneordRepresentation(*Navneord) []WordRepresenter
 	UdsagnsordRepresentation(*Udsagnsord) []WordRepresenter
 }
 
 type Dansk struct {
-	//p.Phonetics
-	Words map[g.Concept]DanishWordRepresenter
+	Words map[Concept]DanishWordRepresenter
 	Er    DanishWordRepresenter
-	//BasicWords map[string]*DanishWord
 }
-
-//type DanishWord interface{}
-
-/*type DanishWord struct {
-	p.Word
-	Ortography string
-	OrdKlasse  string
-}*/
 
 type Udsagnsord struct {
 	Ord DanishWordRepresenter
@@ -45,40 +27,26 @@ type Tillægsord struct {
 }
 
 type DanishSentence struct {
-	core     map[g.Concept]*g.ConceptInfo
+	core     map[Concept]*ConceptInfo
 	Language *Dansk
 	Verb     Udsagnsord
 	Subject  Navneord
 	Object   Navneord
 }
 
-/*func (ord *Navneord) GetText() string {
-	if ord.Bestemt {
-		return ord.Ord.Ortography + "en"
-	}
-	return "en " + ord.Ord.Ortography
-}
-
-func (ord *Udsagnsord) GetText() string {
-	if ord.Tid == "nutid" {
-		return ord.Ord.Ortography + "r"
-	}
-	return ord.Ord.Ortography + "de"
-}*/
-
 func NewDanishSentence(language *Dansk) DanishSentence {
 	var sentence DanishSentence
-	sentence.core = g.GetCoreLanguage()
+	sentence.core = GetCoreLanguage()
 	sentence.Language = language
 	return sentence
 }
 
-func (language *Dansk) Translate(sentence *g.StatementGroup) []WordRepresenter {
+func (language *Dansk) Translate(sentence *StatementGroup) []WordRepresenter {
 	parsedSentence := language.ParseSentence(sentence)
 	return parsedSentence.GetResult()
 }
 
-func (language *Dansk) ParseSentence(baseSentence *g.StatementGroup) DanishSentence {
+func (language *Dansk) ParseSentence(baseSentence *StatementGroup) DanishSentence {
 	var sentence DanishSentence
 	sentence.Language = language
 	sentence.ParseVerb(baseSentence)
@@ -86,7 +54,7 @@ func (language *Dansk) ParseSentence(baseSentence *g.StatementGroup) DanishSente
 	return sentence
 }
 
-func (sentence *DanishSentence) ParseSubject(source *g.StatementGroup) {
+func (sentence *DanishSentence) ParseSubject(source *StatementGroup) {
 	subjects := source.GetDescriptors("doer")
 	if len(subjects) == 0 {
 		subjects = source.GetDescriptors("beer")
@@ -100,24 +68,24 @@ func (sentence *DanishSentence) ParseSubject(source *g.StatementGroup) {
 	}
 }
 
-func (sentence *DanishSentence) ParseComplexSubject(source *g.StatementGroup) {
+func (sentence *DanishSentence) ParseComplexSubject(source *StatementGroup) {
 	sentence.Subject = Navneord{}
 	sentence.Subject.Ord = sentence.Language.Words[source.SimpleConcept] // TODO: this is wrong
 	sentence.ParseDescriptors(source)
 }
 
-func (sentence *DanishSentence) ParseSimpleSubject(source *g.StatementGroup) {
+func (sentence *DanishSentence) ParseSimpleSubject(source *StatementGroup) {
 	sentence.Subject = Navneord{}
 	sentence.Subject.Ord = sentence.Language.Words[source.SimpleConcept]
 	sentence.Subject.Bestemt = 0 < len(source.GetDescriptorsOf("definite", "descriptor"))
 	sentence.ParseDescriptors(source)
 }
 
-func (sentence *DanishSentence) ParseDescriptors(source *g.StatementGroup) {
+func (sentence *DanishSentence) ParseDescriptors(source *StatementGroup) {
 	//do something
 }
 
-func (sentence *DanishSentence) ParseVerb(source *g.StatementGroup) {
+func (sentence *DanishSentence) ParseVerb(source *StatementGroup) {
 	if source.IsComplex() {
 		sentence.ParseComplexVerb(source)
 	} else {
@@ -125,13 +93,13 @@ func (sentence *DanishSentence) ParseVerb(source *g.StatementGroup) {
 	}
 }
 
-func (sentence *DanishSentence) ParseComplexVerb(source *g.StatementGroup) {
+func (sentence *DanishSentence) ParseComplexVerb(source *StatementGroup) {
 	sentence.Verb = Udsagnsord{}
 	sentence.Verb.Ord = sentence.Language.Words[source.SimpleConcept] // TODO: this is wrong
 	sentence.ParseDescriptors(source)
 }
 
-func (sentence *DanishSentence) ParseSimpleVerb(source *g.StatementGroup) {
+func (sentence *DanishSentence) ParseSimpleVerb(source *StatementGroup) {
 	sentence.Verb = Udsagnsord{}
 	if len(source.GetDescriptors("doer")) > 0 {
 		sentence.Verb.Ord = sentence.Language.Words[source.SimpleConcept]
@@ -146,7 +114,7 @@ func (sentence *DanishSentence) ParseSimpleVerb(source *g.StatementGroup) {
 	sentence.ParseDescriptors(source)
 }
 
-func (sentence *DanishSentence) GetTime(source *g.StatementGroup) string {
+func (sentence *DanishSentence) GetTime(source *StatementGroup) string {
 	timeDescriptors := source.GetDescriptorsOf("now", "at", "around", "after", "before")
 	if len(timeDescriptors) == 0 {
 		return "nutid"

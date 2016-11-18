@@ -11,15 +11,14 @@ import (
 )
 
 func main() {
-	dansk := language.Dansk{}
-	dansk.Phonetics = *phonetics.GetDansk()
-	dansk.Words = map[grammatics.Concept]*language.DanishWord{
-		"sun":   &language.DanishWord{phonetics.Word{}, "sol", "noun"},
-		"shine": &language.DanishWord{phonetics.Word{}, "skinne", "verb"},
-	}
+	dansk := language.GetDanishLanguage()
 	sentences := grammatics.GetSentences()
 	for _, sentence := range sentences {
-		_, text := dansk.Translate(sentence)
+		text := ""
+		words := dansk.Translate(sentence)
+		for _, word := range words {
+			text += word.Representation().(string) + " "
+		}
 		fmt.Println(text)
 	}
 }
