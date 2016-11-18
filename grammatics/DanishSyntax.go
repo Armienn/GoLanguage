@@ -6,8 +6,27 @@ type DanishWordRepresenter interface {
 }
 
 type Dansk struct {
-	Words map[Concept]DanishWordRepresenter
-	Er    DanishWordRepresenter
+	Words   map[Concept]DanishWordRepresenter
+	Er      DanishWordRepresenter
+	Missing DanishWordRepresenter
+}
+
+type MissingWord struct{}
+
+func (word *MissingWord) NavneordRepresentation(ord *Navneord) []WordRepresenter {
+	return []WordRepresenter{wordString{"missing"}}
+}
+
+func (word *MissingWord) UdsagnsordRepresentation(ord *Udsagnsord) []WordRepresenter {
+	return []WordRepresenter{wordString{"missing"}}
+}
+
+type wordString struct {
+	word string
+}
+
+func (word wordString) Representation() interface{} {
+	return word.word
 }
 
 type Udsagnsord struct {
@@ -69,14 +88,22 @@ func (sentence *DanishSentence) ParseSubject(source *Statement) {
 }
 
 func (sentence *DanishSentence) ParseComplexSubject(source *Statement) {
+	ok := false
 	sentence.Subject = Navneord{}
-	sentence.Subject.Ord = sentence.Language.Words[source.SimpleConcept] // TODO: this is wrong
+	sentence.Subject.Ord, ok = sentence.Language.Words[source.SimpleConcept]
+	if !ok {
+		sentence.Subject.Ord = sentence.Language.Missing
+	}
 	sentence.ParseDescriptors(source)
 }
 
 func (sentence *DanishSentence) ParseSimpleSubject(source *Statement) {
+	ok := false
 	sentence.Subject = Navneord{}
-	sentence.Subject.Ord = sentence.Language.Words[source.SimpleConcept]
+	sentence.Subject.Ord, ok = sentence.Language.Words[source.SimpleConcept]
+	if !ok {
+		sentence.Subject.Ord = sentence.Language.Missing
+	}
 	sentence.Subject.Bestemt = 0 < len(source.GetDescriptorsOf("definite", "descriptor"))
 	sentence.Subject.Flertal = false
 	amounts := source.GetDescriptors("amount")
@@ -99,19 +126,27 @@ func (sentence *DanishSentence) ParseVerb(source *Statement) {
 }
 
 func (sentence *DanishSentence) ParseComplexVerb(source *Statement) {
+	ok := false
 	sentence.Verb = Udsagnsord{}
 	sentence.Verb.Ord = sentence.Language.Words[source.SimpleConcept] // TODO: this is wrong
+	if !ok {
+		sentence.Verb.Ord = sentence.Language.Missing
+	}
 	sentence.ParseDescriptors(source)
 }
 
 func (sentence *DanishSentence) ParseSimpleVerb(source *Statement) {
+	word, ok := sentence.Language.Words[source.SimpleConcept]
+	if !ok {
+		word = sentence.Language.Missing
+	}
 	sentence.Verb = Udsagnsord{}
 	if len(source.GetDescriptors("doer")) > 0 {
-		sentence.Verb.Ord = sentence.Language.Words[source.SimpleConcept]
+		sentence.Verb.Ord = word
 	} else if len(source.GetDescriptors("beer")) > 0 {
 		sentence.Verb.Ord = sentence.Language.Er
 		sentence.Object = Navneord{}
-		sentence.Object.Ord = sentence.Language.Words[source.SimpleConcept]
+		sentence.Object.Ord = word
 	} else {
 		//uh
 	}

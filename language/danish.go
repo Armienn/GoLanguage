@@ -61,5 +61,7 @@ func GetDanishLanguage() *grammatics.Dansk {
 		"sun":   NewNavneord("en", "sol", "solen", "sole", "solene"),
 		"shine": NewUdsagnsord("skinner", "skinnede"),
 	}
+	dansk.Er = NewUdsagnsord("er", "var")
+	dansk.Missing = new(grammatics.MissingWord)
 	return &dansk
 }
