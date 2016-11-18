@@ -78,6 +78,11 @@ func (sentence *DanishSentence) ParseSimpleSubject(source *Statement) {
 	sentence.Subject = Navneord{}
 	sentence.Subject.Ord = sentence.Language.Words[source.SimpleConcept]
 	sentence.Subject.Bestemt = 0 < len(source.GetDescriptorsOf("definite", "descriptor"))
+	sentence.Subject.Flertal = false
+	amounts := source.GetDescriptors("amount")
+	if len(amounts) > 0 && amounts[0].SimpleConcept != "one" {
+		sentence.Subject.Flertal = true
+	}
 	sentence.ParseDescriptors(source)
 }
 

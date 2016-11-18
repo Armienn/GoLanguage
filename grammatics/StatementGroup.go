@@ -188,17 +188,21 @@ func GetCoreLanguage() map[Concept]*ConceptInfo {
 		//object is always optional and is substituted by an undefined 'something' if not specified
 		//"be":    *Info("doer is object", "doer", "object"),
 		//"do":    *Info("doer does object", "doer", "object"),
-		"beer":       Info("beer is one who is object", "object"),
-		"doer":       Info("beer is one who does object", "object"),                      //object must be doable (must have a possible doer)
-		"object":     Info("beer is one who is the object of object", "object"),          //object must have a possible object
+		"beer":       Info("beer is something that is object", "object"),
+		"doer":       Info("beer is something that does object", "object"),               //object must be doable (must have a possible doer)
+		"object":     Info("beer is something that is the object of object", "object"),   //object must have a possible object
 		"descriptor": Info("beer is a manifestation of the concept of object", "object"), //it is the beer of the concept... hm
-		"at":         Info("beer is one who is at (near or in (either spacially or chronologically)) object", "object"),
-		"around":     Info("beer is one who is spread around (either spacially or chronologically) object", "object"),
-		"before":     Info("beer is one who is chronologically before object", "object"),
-		"after":      Info("beer is one who is chronologically after object", "object"),
-		"now":        Info("beer is one who is chronologically near/at/alongside object", "object"), //this is the same as 'at'? No, at is a relation in any dimension, while this is specifically related to time
+		"at":         Info("beer is something that is at (near or in (either spacially or chronologically)) object", "object"),
+		"around":     Info("beer is something that is spread around (either spacially or chronologically) object", "object"),
+		"before":     Info("beer is something that is chronologically before object", "object"),
+		"after":      Info("beer is something that is chronologically after object", "object"),
+		"now":        Info("beer is something that is chronologically near/at/alongside object", "object"), //this is the same as 'at'? No, at is a relation in any dimension, while this is specifically related to time
 		"again":      Info("beer is an event that reoccurs"),
-		"definite":   Info("beer is one who is blabla todo"),
+		"definite":   Info("beer is something that is blabla todo"),
+		"amount":     Info("beer is something that describes the amount of object", "object"),
+		"one":        Info("beer is of which there is one"),
+		"two":        Info("beer is of which there is two"),
+		"several":    Info("beer is of which there is several"),
 		"sun":        Info("beer is the sun of belonger", "belonger"),
 		"shine":      Info("doer shines on reciever with light source instrument", "doer", "reciever", "instrument"),
 	}
@@ -212,6 +216,12 @@ func GetSentences() []*Statement {
 		StatementFromString("[:shine[doer:sun[definite]]]"),
 		StatementFromString("[:shine[doer:sun[definite]][at:before]]"),
 		StatementFromString("[:shine[doer:sun[definite]][at:now]]"),
+		StatementFromString("[:shine[doer:sun[amount:several]]]"),
+		StatementFromString("[:shine[doer:sun[amount:several]][at:before]]"),
+		StatementFromString("[:shine[doer:sun[amount:several]][at:now]]"),
+		StatementFromString("[:shine[doer:sun[definite][amount:several]]]"),
+		StatementFromString("[:shine[doer:sun[definite][amount:several]][at:before]]"),
+		StatementFromString("[:shine[doer:sun[definite][amount:several]][at:now]]"),
 	}
 }
 
