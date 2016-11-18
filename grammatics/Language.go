@@ -1,40 +1,47 @@
-package language
+package grammatics
 
-import (
-	g "github.com/Armienn/GoLanguage/grammatics"
-	p "github.com/Armienn/GoLanguage/phonetics"
-)
+type Translater interface {
+	Translate(*g.StatementGroup) []WordRepresenter
+}
 
-type Translator interface {
-	Translate(*g.StatementGroup) []p.Word
+type WordRepresenter interface {
+	Representation() interface{}
+}
+
+type DanishWordRepresenter interface {
+	NavneordRepresentation(*Navneord) []WordRepresenter
+	UdsagnsordRepresentation(*Udsagnsord) []WordRepresenter
 }
 
 type Dansk struct {
-	p.Phonetics
-	Words      map[g.Concept]*DanishWord
-	BasicWords map[string]*DanishWord
+	//p.Phonetics
+	Words map[g.Concept]DanishWordRepresenter
+	Er    DanishWordRepresenter
+	//BasicWords map[string]*DanishWord
 }
 
-type DanishWord struct {
+//type DanishWord interface{}
+
+/*type DanishWord struct {
 	p.Word
 	Ortography string
 	OrdKlasse  string
-}
+}*/
 
 type Udsagnsord struct {
-	Ord *DanishWord
+	Ord DanishWordRepresenter
 	Tid string
 }
 
 type Navneord struct {
-	Ord        *DanishWord
+	Ord        DanishWordRepresenter
 	Flertal    bool
 	Bestemt    bool
 	Tillægsord []Tillægsord
 }
 
 type Tillægsord struct {
-	Ord *DanishWord
+	Ord *DanishWordRepresenter
 }
 
 type DanishSentence struct {
@@ -45,7 +52,7 @@ type DanishSentence struct {
 	Object   Navneord
 }
 
-func (ord *Navneord) GetText() string {
+/*func (ord *Navneord) GetText() string {
 	if ord.Bestemt {
 		return ord.Ord.Ortography + "en"
 	}
@@ -57,7 +64,7 @@ func (ord *Udsagnsord) GetText() string {
 		return ord.Ord.Ortography + "r"
 	}
 	return ord.Ord.Ortography + "de"
-}
+}*/
 
 func NewDanishSentence(language *Dansk) DanishSentence {
 	var sentence DanishSentence
@@ -66,7 +73,7 @@ func NewDanishSentence(language *Dansk) DanishSentence {
 	return sentence
 }
 
-func (language *Dansk) Translate(sentence *g.StatementGroup) ([]p.Word, string) {
+func (language *Dansk) Translate(sentence *g.StatementGroup) []WordRepresenter {
 	parsedSentence := language.ParseSentence(sentence)
 	return parsedSentence.GetResult()
 }
@@ -129,7 +136,7 @@ func (sentence *DanishSentence) ParseSimpleVerb(source *g.StatementGroup) {
 	if len(source.GetDescriptors("doer")) > 0 {
 		sentence.Verb.Ord = sentence.Language.Words[source.SimpleConcept]
 	} else if len(source.GetDescriptors("beer")) > 0 {
-		sentence.Verb.Ord = sentence.Language.BasicWords["er"]
+		sentence.Verb.Ord = sentence.Language.Er
 		sentence.Object = Navneord{}
 		sentence.Object.Ord = sentence.Language.Words[source.SimpleConcept]
 	} else {
@@ -154,8 +161,9 @@ func (sentence *DanishSentence) GetTime(source *g.StatementGroup) string {
 	}
 }
 
-func (sentence *DanishSentence) GetResult() ([]p.Word, string) {
-	words := []p.Word{}
-	text := sentence.Subject.GetText() + " " + sentence.Verb.GetText()
-	return words, text
+func (sentence *DanishSentence) GetResult() []WordRepresenter {
+	words := make([]WordRepresenter, 0)
+	words = append(words, sentence.Subject.Ord.NavneordRepresentation(&sentence.Subject)...)
+	words = append(words, sentence.Verb.Ord.UdsagnsordRepresentation(&sentence.Verb)...)
+	return words
 }
