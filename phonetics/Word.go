@@ -1,4 +1,4 @@
-package language
+package phonetics
 
 import "math/rand"
 

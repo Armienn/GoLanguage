@@ -1,4 +1,4 @@
-package language
+package phonetics
 
 func BasicPatterns() []SyllablePattern {
 	patterns := make([]SyllablePattern, 0)

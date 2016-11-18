@@ -1,4 +1,4 @@
-package language
+package phonetics
 
 type SyllablePattern struct {
 	OnsetPatterns   []SoundPattern
