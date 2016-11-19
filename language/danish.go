@@ -70,6 +70,48 @@ func NewSubstantivWord(en string, ubestemt string, bestemt string, multi string,
 	}}
 }
 
+type AdjektivWord struct {
+	Forms map[string]WordString
+}
+
+func (word AdjektivWord) Representation(ord *grammatics.Adjektiv) []grammatics.WordRepresenter {
+	return []grammatics.WordRepresenter{word.Forms["base"]}
+}
+
+func NewAdjektivWord(base string) *AdjektivWord {
+	return &AdjektivWord{map[string]WordString{
+		"base": WordString{base},
+	}}
+}
+
+type AdverbiumWord struct {
+	Forms map[string]WordString
+}
+
+func (word AdverbiumWord) Representation(ord *grammatics.Adverbium) []grammatics.WordRepresenter {
+	return []grammatics.WordRepresenter{word.Forms["base"]}
+}
+
+func NewAdverbiumWord(base string) *AdverbiumWord {
+	return &AdverbiumWord{map[string]WordString{
+		"base": WordString{base},
+	}}
+}
+
+type SimpleWord struct {
+	Forms map[string]WordString
+}
+
+func (word SimpleWord) Representation() []grammatics.WordRepresenter {
+	return []grammatics.WordRepresenter{word.Forms["base"]}
+}
+
+func NewSimpleWord(base string) *SimpleWord {
+	return &SimpleWord{map[string]WordString{
+		"base": WordString{base},
+	}}
+}
+
 func GetDanishLanguage() *grammatics.Dansk {
 	dansk := grammatics.Dansk{}
 	dansk.Verber = map[grammatics.Concept]grammatics.VerbiumRepresenter{
@@ -80,9 +122,15 @@ func GetDanishLanguage() *grammatics.Dansk {
 		"!":   NewSubstantivWord("en", "!", "!en", "!er", "!erne"),
 		"sun": NewSubstantivWord("en", "sol", "solen", "sole", "solene"),
 	}
-	dansk.Adjektiver = make(map[grammatics.Concept]grammatics.AdjektivRepresenter)
-	dansk.Adverbier = make(map[grammatics.Concept]grammatics.AdverbiumRepresenter)
-	dansk.Præpositioner = make(map[grammatics.Concept]grammatics.SimpleRepresenter)
+	dansk.Adjektiver = map[grammatics.Concept]grammatics.AdjektivRepresenter{
+		"!": NewAdjektivWord("!"),
+	}
+	dansk.Adverbier = map[grammatics.Concept]grammatics.AdverbiumRepresenter{
+		"!": NewAdverbiumWord("!"),
+	}
+	dansk.Præpositioner = map[grammatics.Concept]grammatics.SimpleRepresenter{
+		"!": NewSimpleWord("!"),
+	}
 	dansk.Er = NewVerbiumWord("er", "var")
 	return &dansk
 }
