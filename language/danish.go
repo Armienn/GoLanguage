@@ -117,19 +117,36 @@ func GetDanishLanguage() *grammatics.Dansk {
 	dansk.Verber = map[grammatics.Concept]grammatics.VerbiumRepresenter{
 		"!":     NewVerbiumWord("!er", "!ede"),
 		"shine": NewVerbiumWord("skinner", "skinnede"),
+		"rise":  NewVerbiumWord("stiger", "steg"),
+		"shout": NewVerbiumWord("råber", "råbte"),
+		"jump":  NewVerbiumWord("hopper", "hoppede"),
+		"walk":  NewVerbiumWord("går", "gik"),
 	}
 	dansk.Substantiver = map[grammatics.Concept]grammatics.SubstantivRepresenter{
-		"!":   NewSubstantivWord("en", "!", "!en", "!er", "!erne"),
-		"sun": NewSubstantivWord("en", "sol", "solen", "sole", "solene"),
+		"!":      NewSubstantivWord("en", "!", "!en", "!er", "!erne"),
+		"sun":    NewSubstantivWord("en", "sol", "solen", "sole", "solene"),
+		"day":    NewSubstantivWord("en", "dag", "dagen", "dage", "dagene"),
+		"person": NewSubstantivWord("en", "person", "personen", "personer", "personerne"),
+		"kitten": NewSubstantivWord("en", "killing", "killingen", "killinger", "killingerne"),
+		"table":  NewSubstantivWord("et", "bord", "bordet", "borde", "bordene"),
 	}
 	dansk.Adjektiver = map[grammatics.Concept]grammatics.AdjektivRepresenter{
-		"!": NewAdjektivWord("!"),
+		"!":      NewAdjektivWord("!"),
+		"bright": NewAdjektivWord("lys"),
+		"all":    NewAdjektivWord("alle"),
 	}
 	dansk.Adverbier = map[grammatics.Concept]grammatics.AdverbiumRepresenter{
-		"!": NewAdverbiumWord("!"),
+		"!":      NewAdverbiumWord("!"),
+		"bright": NewAdverbiumWord("lyst"),
+		"up":     NewAdverbiumWord("op"),
+		"again":  NewAdverbiumWord("igen"),
 	}
 	dansk.Præpositioner = map[grammatics.Concept]grammatics.SimpleRepresenter{
-		"!": NewSimpleWord("!"),
+		"!":      NewSimpleWord("!"),
+		"at":     NewSimpleWord("ved"),
+		"before": NewSimpleWord("før"),
+		"after":  NewSimpleWord("efter"),
+		"onto":   NewSimpleWord("op på"),
 	}
 	dansk.Er = NewVerbiumWord("er", "var")
 	return &dansk

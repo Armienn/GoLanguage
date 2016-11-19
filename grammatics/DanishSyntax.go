@@ -128,20 +128,33 @@ func (language *Dansk) ParseSubstantiv(source *Statement) Substantiv {
 	}
 	substantiv.Tillægsord = make([]Adjektiv, 0)
 	for _, descriptor := range source.Descriptors {
-		if descriptor.Relation == "descriptor" && descriptor.SimpleConcept == "definite" {
+		descriptorType, addWords := SubstantivDescriptorType(descriptor)
+		switch descriptorType {
+		case "definite":
 			substantiv.Bestemt = true
-			continue
-		}
-		if descriptor.Relation == "amount" && descriptor.SimpleConcept == "several" {
-			substantiv.Flertal = true
-			continue
-		}
-		if descriptor.Relation == "amount" && descriptor.SimpleConcept != "one" {
+		case "multiple":
 			substantiv.Flertal = true
 		}
-		substantiv.Tillægsord = append(substantiv.Tillægsord, language.ParseAdjektiv(descriptor))
+		if addWords {
+			substantiv.Tillægsord = append(substantiv.Tillægsord, language.ParseAdjektiv(descriptor))
+		}
 	}
 	return substantiv
+}
+
+func SubstantivDescriptorType(source *Statement) (string, bool) {
+	if source.Relation != "descriptor" || source.IsComplex() {
+		return "other", true
+	}
+	switch source.SimpleConcept {
+	case "definite":
+		return "definite", false
+	case "several":
+		return "multiple", false
+	case "two", "all":
+		return "multiple", true
+	}
+	return "default", true
 }
 
 func (language *Dansk) ParseAdjektiv(source *Statement) Adjektiv {
