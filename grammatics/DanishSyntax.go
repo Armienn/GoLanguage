@@ -28,7 +28,6 @@ type Dansk struct {
 	Præpositioner map[Concept]SimpleRepresenter
 	Er            VerbiumRepresenter
 	Og            SimpleRepresenter
-	Missing       SimpleRepresenter
 }
 
 type MissingVerbium struct{}

@@ -210,14 +210,14 @@ func GetCoreLanguage() map[Concept]*ConceptInfo {
 
 func GetSentences() []*Statement {
 	return []*Statement{
-		StatementFromString("[:shine[doer:sun][at:before]]"),
 		StatementFromString("[:shine[doer:sun][at:now]]"),
-		StatementFromString("[:shine[doer:sun[definite]][at:before]]"),
+		StatementFromString("[:shine[doer:sun][at:before]]"),
 		StatementFromString("[:shine[doer:sun[definite]][at:now]]"),
-		StatementFromString("[:shine[doer:sun[amount:several]][at:before]]"),
+		StatementFromString("[:shine[doer:sun[definite]][at:before]]"),
 		StatementFromString("[:shine[doer:sun[amount:several]][at:now]]"),
-		StatementFromString("[:shine[doer:sun[definite][amount:several]][at:before]]"),
+		StatementFromString("[:shine[doer:sun[amount:several]][at:before]]"),
 		StatementFromString("[:shine[doer:sun[definite][amount:several]][at:now]]"),
+		StatementFromString("[:shine[doer:sun[definite][amount:several]][at:before]]"),
 		StatementFromString("[:shine[doer:sun]"),
 		StatementFromString("[:shine[doer:sun][around:now]"),
 		StatementFromString("[:shine[doer:sun][at:before]]"),

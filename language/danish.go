@@ -10,58 +10,77 @@ func (word WordString) Representation() interface{} {
 	return word.Word
 }
 
-type DanishWord struct {
-	NavneordWord   map[string]WordString
-	UdsagnsordWord map[string]WordString
+type VerbiumWord struct {
+	Forms map[string]WordString
 }
 
-func NewNavneord(en string, ubestemt string, bestemt string, multi string, multibestemt string) *DanishWord {
-	return &DanishWord{map[string]WordString{
-		"en":           WordString{en},
-		"ubestemt":     WordString{ubestemt},
-		"bestemt":      WordString{bestemt},
-		"multi":        WordString{multi},
-		"multibestemt": WordString{multibestemt},
-	}, nil}
+func (word VerbiumWord) Representation(sentence *grammatics.DanishSentence) []grammatics.WordRepresenter {
+	words := make([]grammatics.WordRepresenter, 0)
+	for i, part := range sentence.Subject {
+		if i > 0 {
+			words = append(words, sentence.Language.Og.Representation()...)
+		}
+		words = append(words, part.Ord.Representation(&part)...)
+	}
+	words = append(words, word.Forms[sentence.Verb.Tid])
+	for i, part := range sentence.Object {
+		if i > 0 {
+			words = append(words, sentence.Language.Og.Representation()...)
+		}
+		words = append(words, part.Ord.Representation(&part)...)
+	}
+	for _, part := range sentence.Other {
+		words = append(words, part.Forholdsord.Representation()...)
+		words = append(words, part.Ord.Ord.Representation(&part.Ord)...)
+	}
+	return words
 }
 
-func NewUdsagnsord(nutid string, datid string) *DanishWord {
-	return &DanishWord{nil, map[string]WordString{
+func NewVerbiumWord(nutid string, datid string) *VerbiumWord {
+	return &VerbiumWord{map[string]WordString{
 		"nutid": WordString{nutid},
 		"datid": WordString{datid},
 	}}
 }
 
-func (word *DanishWord) NavneordRepresentation(ord *grammatics.Navneord) []grammatics.WordRepresenter {
-	if word.NavneordWord == nil {
-		return nil
-	}
-	if ord.Bestemt {
-		if ord.Flertal {
-			return []grammatics.WordRepresenter{word.NavneordWord["multibestemt"]}
-		}
-		return []grammatics.WordRepresenter{word.NavneordWord["bestemt"]}
-	}
-	if ord.Flertal {
-		return []grammatics.WordRepresenter{word.NavneordWord["multi"]}
-	}
-	return []grammatics.WordRepresenter{word.NavneordWord["en"], word.NavneordWord["ubestemt"]}
+type SubstantivWord struct {
+	Forms map[string]WordString
 }
 
-func (word *DanishWord) UdsagnsordRepresentation(ord *grammatics.Udsagnsord) []grammatics.WordRepresenter {
-	if word.UdsagnsordWord == nil {
-		return nil
+func (word SubstantivWord) Representation(ord *grammatics.Substantiv) []grammatics.WordRepresenter {
+	if ord.Bestemt {
+		if ord.Flertal {
+			return []grammatics.WordRepresenter{word.Forms["multibestemt"]}
+		}
+		return []grammatics.WordRepresenter{word.Forms["bestemt"]}
 	}
-	return []grammatics.WordRepresenter{word.UdsagnsordWord[ord.Tid]}
+	if ord.Flertal {
+		return []grammatics.WordRepresenter{word.Forms["multi"]}
+	}
+	return []grammatics.WordRepresenter{word.Forms["en"], word.Forms["ubestemt"]}
+}
+
+func NewSubstantivWord(en string, ubestemt string, bestemt string, multi string, multibestemt string) *SubstantivWord {
+	return &SubstantivWord{map[string]WordString{
+		"en":           WordString{en},
+		"ubestemt":     WordString{ubestemt},
+		"bestemt":      WordString{bestemt},
+		"multi":        WordString{multi},
+		"multibestemt": WordString{multibestemt},
+	}}
 }
 
 func GetDanishLanguage() *grammatics.Dansk {
 	dansk := grammatics.Dansk{}
-	dansk.Words = map[grammatics.Concept]grammatics.DanishWordRepresenter{
-		"sun":   NewNavneord("en", "sol", "solen", "sole", "solene"),
-		"shine": NewUdsagnsord("skinner", "skinnede"),
+	dansk.Verber = map[grammatics.Concept]grammatics.VerbiumRepresenter{
+		"shine": NewVerbiumWord("skinner", "skinnede"),
 	}
-	dansk.Er = NewUdsagnsord("er", "var")
-	dansk.Missing = new(grammatics.MissingWord)
+	dansk.Substantiver = map[grammatics.Concept]grammatics.SubstantivRepresenter{
+		"sun": NewSubstantivWord("en", "sol", "solen", "sole", "solene"),
+	}
+	dansk.Adjektiver = make(map[grammatics.Concept]grammatics.AdjektivRepresenter)
+	dansk.Adverbier = make(map[grammatics.Concept]grammatics.AdverbiumRepresenter)
+	dansk.Præpositioner = make(map[grammatics.Concept]grammatics.SimpleRepresenter)
+	dansk.Er = NewVerbiumWord("er", "var")
 	return &dansk
 }
