@@ -1,23 +1,27 @@
 package grammatics
 
 type DanishWordRepresenter interface {
-	NavneordRepresentation(*Navneord) []WordRepresenter
-	UdsagnsordRepresentation(*Udsagnsord) []WordRepresenter
+	SubstantivRepresentation(*Substantiv) []WordRepresenter
+	VerbiumRepresentation(*Verbium) []WordRepresenter
 }
 
 type Dansk struct {
-	Words   map[Concept]DanishWordRepresenter
-	Er      DanishWordRepresenter
-	Missing DanishWordRepresenter
+	Verber        map[Concept]DanishWordRepresenter
+	Substantiver  map[Concept]DanishWordRepresenter
+	Adjektiver    map[Concept]DanishWordRepresenter
+	Adverbier     map[Concept]DanishWordRepresenter
+	Præpositioner map[Concept]DanishWordRepresenter
+	Er            DanishWordRepresenter
+	Missing       DanishWordRepresenter
 }
 
 type MissingWord struct{}
 
-func (word *MissingWord) NavneordRepresentation(ord *Navneord) []WordRepresenter {
+func (word *MissingWord) SubstantivRepresentation(ord *Substantiv) []WordRepresenter {
 	return []WordRepresenter{wordString{"missing"}}
 }
 
-func (word *MissingWord) UdsagnsordRepresentation(ord *Udsagnsord) []WordRepresenter {
+func (word *MissingWord) VerbiumRepresentation(ord *Verbium) []WordRepresenter {
 	return []WordRepresenter{wordString{"missing"}}
 }
 
@@ -29,28 +33,41 @@ func (word wordString) Representation() interface{} {
 	return word.word
 }
 
-type Udsagnsord struct {
-	Ord DanishWordRepresenter
-	Tid string
+type Verbium struct {
+	Ord       DanishWordRepresenter
+	Tid       string
+	Adverbier []Adverbium
 }
 
-type Navneord struct {
+type Substantiv struct {
 	Ord        DanishWordRepresenter
 	Flertal    bool
 	Bestemt    bool
-	Tillægsord []Tillægsord
+	Tillægsord []Adjektiv
 }
 
-type Tillægsord struct {
-	Ord *DanishWordRepresenter
+type Adjektiv struct {
+	Ord       DanishWordRepresenter
+	Adverbier []Adverbium
+}
+
+type Adverbium struct {
+	Ord       DanishWordRepresenter
+	Adverbier []Adverbium
+}
+
+type Forholdsled struct {
+	Forholdsord DanishWordRepresenter
+	Ord         Substantiv
 }
 
 type DanishSentence struct {
 	core     map[Concept]*ConceptInfo
 	Language *Dansk
-	Verb     Udsagnsord
-	Subject  Navneord
-	Object   Navneord
+	Verb     Verbium
+	Subject  []Substantiv
+	Object   []Substantiv
+	Other    []Forholdsled
 }
 
 func NewDanishSentence(language *Dansk) DanishSentence {
@@ -65,101 +82,134 @@ func (language *Dansk) Translate(sentence *Statement) []WordRepresenter {
 	return parsedSentence.GetResult()
 }
 
-func (language *Dansk) ParseSentence(baseSentence *Statement) DanishSentence {
+func (language *Dansk) ParseSentence(source *Statement) DanishSentence {
 	var sentence DanishSentence
 	sentence.Language = language
-	sentence.ParseVerb(baseSentence)
-	sentence.ParseSubject(baseSentence)
+
+	for _, descriptor := range source.Descriptors {
+		switch descriptor.Relation {
+		case "doer", "beer":
+			sentence.Subject = append(sentence.Subject, language.ParseSubstantiv(descriptor))
+		case "object":
+			sentence.Object = append(sentence.Object, language.ParseSubstantiv(descriptor))
+		case "at":
+			if IsTime(descriptor) {
+				sentence.Verb.Tid = GetTime(descriptor)
+			} else {
+				sentence.Other = append(sentence.Other, language.ParseForholdsled(descriptor))
+			}
+		case "around":
+			if IsTime(descriptor) {
+				sentence.Verb.Tid = GetTime(descriptor) //some other time thing
+			} else {
+				sentence.Other = append(sentence.Other, language.ParseForholdsled(descriptor))
+			}
+		case "descriptor":
+			sentence.Verb.Adverbier = append(sentence.Verb.Adverbier, language.ParseAdverbium(descriptor))
+		case "and", "but": // additional sentences
+
+		default:
+			sentence.Other = append(sentence.Other, language.ParseForholdsled(descriptor))
+		}
+	}
+
+	if source.IsComplex() {
+		sentence.Verb.Ord = language.ParseComplex(source)
+	} else {
+		sentence.Verb.Ord = FindWord(source, language.Verber, language.Missing)
+	}
 	return sentence
 }
 
-func (sentence *DanishSentence) ParseSubject(source *Statement) {
-	subjects := source.GetDescriptors("doer")
-	if len(subjects) == 0 {
-		subjects = source.GetDescriptors("beer")
-	}
-	for _, subject := range subjects {
-		if subject.IsComplex() {
-			sentence.ParseComplexSubject(subject)
-		} else {
-			sentence.ParseSimpleSubject(subject)
-		}
-	}
-}
-
-func (sentence *DanishSentence) ParseComplexSubject(source *Statement) {
-	ok := false
-	sentence.Subject = Navneord{}
-	sentence.Subject.Ord, ok = sentence.Language.Words[source.SimpleConcept]
-	if !ok {
-		sentence.Subject.Ord = sentence.Language.Missing
-	}
-	sentence.ParseDescriptors(source)
-}
-
-func (sentence *DanishSentence) ParseSimpleSubject(source *Statement) {
-	ok := false
-	sentence.Subject = Navneord{}
-	sentence.Subject.Ord, ok = sentence.Language.Words[source.SimpleConcept]
-	if !ok {
-		sentence.Subject.Ord = sentence.Language.Missing
-	}
-	sentence.Subject.Bestemt = 0 < len(source.GetDescriptorsOf("definite", "descriptor"))
-	sentence.Subject.Flertal = false
-	amounts := source.GetDescriptors("amount")
-	if len(amounts) > 0 && amounts[0].SimpleConcept != "one" {
-		sentence.Subject.Flertal = true
-	}
-	sentence.ParseDescriptors(source)
-}
-
-func (sentence *DanishSentence) ParseDescriptors(source *Statement) {
-	//do something
-}
-
-func (sentence *DanishSentence) ParseVerb(source *Statement) {
+func (language *Dansk) ParseSubstantiv(source *Statement) Substantiv {
+	substantiv := Substantiv{}
 	if source.IsComplex() {
-		sentence.ParseComplexVerb(source)
+		substantiv.Ord = language.ParseComplex(source)
 	} else {
-		sentence.ParseSimpleVerb(source)
+		substantiv.Ord = FindWord(source, language.Substantiver, language.Missing)
 	}
+	substantiv.Tillægsord = make([]Adjektiv, 0)
+	for _, descriptor := range source.Descriptors {
+		if descriptor.Relation == "descriptor" && descriptor.SimpleConcept == "definite" {
+			substantiv.Bestemt = true
+			continue
+		}
+		if descriptor.Relation == "amount" && descriptor.SimpleConcept == "several" {
+			substantiv.Flertal = true
+			continue
+		}
+		if descriptor.Relation == "amount" && descriptor.SimpleConcept != "one" {
+			substantiv.Flertal = true
+		}
+		substantiv.Tillægsord = append(substantiv.Tillægsord, language.ParseAdjektiv(descriptor))
+	}
+	return substantiv
 }
 
-func (sentence *DanishSentence) ParseComplexVerb(source *Statement) {
-	ok := false
-	sentence.Verb = Udsagnsord{}
-	sentence.Verb.Ord = sentence.Language.Words[source.SimpleConcept] // TODO: this is wrong
-	if !ok {
-		sentence.Verb.Ord = sentence.Language.Missing
-	}
-	sentence.ParseDescriptors(source)
-}
-
-func (sentence *DanishSentence) ParseSimpleVerb(source *Statement) {
-	word, ok := sentence.Language.Words[source.SimpleConcept]
-	if !ok {
-		word = sentence.Language.Missing
-	}
-	sentence.Verb = Udsagnsord{}
-	if len(source.GetDescriptors("doer")) > 0 {
-		sentence.Verb.Ord = word
-	} else if len(source.GetDescriptors("beer")) > 0 {
-		sentence.Verb.Ord = sentence.Language.Er
-		sentence.Object = Navneord{}
-		sentence.Object.Ord = word
+func (language *Dansk) ParseAdjektiv(source *Statement) Adjektiv {
+	adjektiv := Adjektiv{}
+	if source.IsComplex() {
+		adjektiv.Ord = language.ParseComplex(source)
 	} else {
-		//uh
-		sentence.Verb.Ord = sentence.Language.Missing
+		adjektiv.Ord = FindWord(source, language.Adjektiver, language.Missing)
 	}
-	sentence.Verb.Tid = sentence.GetTime(source)
-	sentence.ParseDescriptors(source)
+	adjektiv.Adverbier = make([]Adverbium, 0)
+	for _, descriptor := range source.Descriptors {
+		adjektiv.Adverbier = append(adjektiv.Adverbier, language.ParseAdverbium(descriptor))
+	}
+	return adjektiv
 }
 
-func (sentence *DanishSentence) GetTime(source *Statement) string {
-	if len(source.GetDescriptorsOf("before", "at")) > 0 {
+func (language *Dansk) ParseAdverbium(source *Statement) Adverbium {
+	adverbium := Adverbium{}
+	if source.IsComplex() {
+		adverbium.Ord = language.ParseComplex(source)
+	} else {
+		adverbium.Ord = FindWord(source, language.Adverbier, language.Missing)
+	}
+	adverbium.Adverbier = make([]Adverbium, 0)
+	for _, descriptor := range source.Descriptors {
+		adverbium.Adverbier = append(adverbium.Adverbier, language.ParseAdverbium(descriptor))
+	}
+	return adverbium
+}
+
+func (language *Dansk) ParseForholdsled(source *Statement) Forholdsled {
+	led := Forholdsled{}
+	led.Forholdsord = language.Præpositioner[source.Relation]
+	led.Ord = language.ParseSubstantiv(source)
+	return led
+}
+
+func FindWord(source *Statement, list map[Concept]DanishWordRepresenter, missing DanishWordRepresenter) DanishWordRepresenter {
+	word, ok := list[source.SimpleConcept]
+	if !ok {
+		return missing
+	}
+	return word
+}
+
+func IsTime(source *Statement) bool {
+	if source.IsComplex() {
+		return false
+	}
+	switch source.SimpleConcept {
+	case "after", "now", "before":
+		return true
+	}
+	return false
+}
+
+func GetTime(source *Statement) string {
+	switch source.SimpleConcept {
+	case "before":
 		return "datid"
 	}
 	return "nutid"
+}
+
+func (language *Dansk) ParseComplex(source *Statement) DanishWordRepresenter {
+	return language.Missing
 }
 
 func (sentence *DanishSentence) GetResult() []WordRepresenter {
