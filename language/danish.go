@@ -73,9 +73,11 @@ func NewSubstantivWord(en string, ubestemt string, bestemt string, multi string,
 func GetDanishLanguage() *grammatics.Dansk {
 	dansk := grammatics.Dansk{}
 	dansk.Verber = map[grammatics.Concept]grammatics.VerbiumRepresenter{
+		"!":     NewVerbiumWord("!er", "!ede"),
 		"shine": NewVerbiumWord("skinner", "skinnede"),
 	}
 	dansk.Substantiver = map[grammatics.Concept]grammatics.SubstantivRepresenter{
+		"!":   NewSubstantivWord("en", "!", "!en", "!er", "!erne"),
 		"sun": NewSubstantivWord("en", "sol", "solen", "sole", "solene"),
 	}
 	dansk.Adjektiver = make(map[grammatics.Concept]grammatics.AdjektivRepresenter)

@@ -30,44 +30,6 @@ type Dansk struct {
 	Og            SimpleRepresenter
 }
 
-type MissingVerbium struct{}
-
-func (word MissingVerbium) Representation(*DanishSentence) []WordRepresenter {
-	return []WordRepresenter{wordString{"missing"}}
-}
-
-type MissingSubstantiv struct{}
-
-func (word MissingSubstantiv) Representation(*Substantiv) []WordRepresenter {
-	return []WordRepresenter{wordString{"missing"}}
-}
-
-type MissingAdjektiv struct{}
-
-func (word MissingAdjektiv) Representation(*Adjektiv) []WordRepresenter {
-	return []WordRepresenter{wordString{"missing"}}
-}
-
-type MissingAdverbium struct{}
-
-func (word MissingAdverbium) Representation(*Adverbium) []WordRepresenter {
-	return []WordRepresenter{wordString{"missing"}}
-}
-
-type MissingSimple struct{}
-
-func (word MissingSimple) Representation() []WordRepresenter {
-	return []WordRepresenter{wordString{"missing"}}
-}
-
-type wordString struct {
-	word string
-}
-
-func (word wordString) Representation() interface{} {
-	return word.word
-}
-
 type Verbium struct {
 	Ord       VerbiumRepresenter
 	Tid       string
@@ -120,6 +82,7 @@ func (language *Dansk) Translate(sentence *Statement) []WordRepresenter {
 func (language *Dansk) ParseSentence(source *Statement) DanishSentence {
 	var sentence DanishSentence
 	sentence.Language = language
+	sentence.Verb.Tid = "nutid"
 
 	for _, descriptor := range source.Descriptors {
 		switch descriptor.Relation {
@@ -211,7 +174,7 @@ func (language *Dansk) ParseAdverbium(source *Statement) Adverbium {
 
 func (language *Dansk) ParseForholdsled(source *Statement) Forholdsled {
 	led := Forholdsled{}
-	led.Forholdsord = language.Præpositioner[source.Relation]
+	led.Forholdsord = language.FindSimple(source)
 	led.Ord = language.ParseSubstantiv(source)
 	return led
 }
@@ -219,7 +182,7 @@ func (language *Dansk) ParseForholdsled(source *Statement) Forholdsled {
 func (language *Dansk) FindVerbium(source *Statement) VerbiumRepresenter {
 	word, ok := language.Verber[source.SimpleConcept]
 	if !ok {
-		return MissingVerbium{}
+		return language.Verber["!"]
 	}
 	return word
 }
@@ -227,7 +190,7 @@ func (language *Dansk) FindVerbium(source *Statement) VerbiumRepresenter {
 func (language *Dansk) FindSubstantiv(source *Statement) SubstantivRepresenter {
 	word, ok := language.Substantiver[source.SimpleConcept]
 	if !ok {
-		return MissingSubstantiv{}
+		return language.Substantiver["!"]
 	}
 	return word
 }
@@ -235,7 +198,7 @@ func (language *Dansk) FindSubstantiv(source *Statement) SubstantivRepresenter {
 func (language *Dansk) FindAdjektiv(source *Statement) AdjektivRepresenter {
 	word, ok := language.Adjektiver[source.SimpleConcept]
 	if !ok {
-		return MissingAdjektiv{}
+		return language.Adjektiver["!"]
 	}
 	return word
 }
@@ -243,7 +206,7 @@ func (language *Dansk) FindAdjektiv(source *Statement) AdjektivRepresenter {
 func (language *Dansk) FindAdverbium(source *Statement) AdverbiumRepresenter {
 	word, ok := language.Adverbier[source.SimpleConcept]
 	if !ok {
-		return MissingAdverbium{}
+		return language.Adverbier["!"]
 	}
 	return word
 }
@@ -251,7 +214,7 @@ func (language *Dansk) FindAdverbium(source *Statement) AdverbiumRepresenter {
 func (language *Dansk) FindSimple(source *Statement) SimpleRepresenter {
 	word, ok := language.Præpositioner[source.SimpleConcept]
 	if !ok {
-		return MissingSimple{}
+		return language.Præpositioner["!"]
 	}
 	return word
 }
