@@ -200,11 +200,11 @@ func GetCoreLanguage() map[Concept]*ConceptInfo {
 		"again":      Info("beer is an event that reoccurs"),
 		"definite":   Info("beer is something that is blabla todo"),
 		//"amount":     Info("beer is something that describes the amount of object", "object"), //?
-		"one":        Info("beer is of which there is one"),
-		"two":        Info("beer is of which there is two"),
-		"several":    Info("beer is of which there is several"),
-		"sun":        Info("beer is the sun of belonger", "belonger"),
-		"shine":      Info("doer shines on reciever with light source instrument", "doer", "reciever", "instrument"),
+		"one":     Info("beer is of which there is one"),
+		"two":     Info("beer is of which there is two"),
+		"several": Info("beer is of which there is several"),
+		"sun":     Info("beer is the sun of belonger", "belonger"),
+		"shine":   Info("doer shines on reciever with light source instrument", "doer", "reciever", "instrument"),
 	}
 }
 
@@ -234,7 +234,7 @@ func GetSentences() []*Statement {
 		StatementFromString("[:shout[doer:person[descriptor:happy]][descriptor:often]]"),
 		StatementFromString("[:shout[doer:person[descriptor:happy][descriptor:often]]]"),
 		StatementFromString("[:jump[doer:kitten[descriptor:definite]][at:before][descriptor:up]]"),
-		StatementFromString("[:jump[doer:kitten[descriptor:definite]][at:before][onto:table]]"),
+		StatementFromString("[:jump[doer:kitten[descriptor:definite]][at:before][onto:table]]"), //[onto:table] -> [to:[on:table]]?
 		StatementFromString("[:walk[doer:kitten[descriptor:definite][descriptor:small][owner:me]][at:before][to:away]]"),
 		StatementFromString("[:rain[around:now]]"),
 	}

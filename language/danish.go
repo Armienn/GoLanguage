@@ -141,6 +141,7 @@ func GetDanishLanguage() *grammatics.Dansk {
 		"shout": NewVerbiumWord("råber", "råbte"),
 		"jump":  NewVerbiumWord("hopper", "hoppede"),
 		"walk":  NewVerbiumWord("går", "gik"),
+		"rain":  NewVerbiumWord("regner", "regnede"),
 	}
 	dansk.Substantiver = map[grammatics.Concept]grammatics.SubstantivRepresenter{
 		"!":      NewSubstantivWord("en", "!", "!en", "!er", "!erne"),
@@ -154,12 +155,16 @@ func GetDanishLanguage() *grammatics.Dansk {
 		"!":      NewAdjektivWord("!"),
 		"bright": NewAdjektivWord("lys"),
 		"all":    NewAdjektivWord("alle"),
+		"small":  NewAdjektivWord("lille"),
+		"happy":  NewAdjektivWord("glad"),
+		"two":    NewAdjektivWord("to"),
 	}
 	dansk.Adverbier = map[grammatics.Concept]grammatics.AdverbiumRepresenter{
 		"!":      NewAdverbiumWord("!"),
 		"bright": NewAdverbiumWord("lyst"),
 		"up":     NewAdverbiumWord("op"),
 		"again":  NewAdverbiumWord("igen"),
+		"two":    NewAdverbiumWord("to"),
 	}
 	dansk.Præpositioner = map[grammatics.Concept]grammatics.SimpleRepresenter{
 		"!":      NewSimpleWord("!"),
