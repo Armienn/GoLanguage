@@ -29,6 +29,9 @@ func (word VerbiumWord) Representation(sentence *grammatics.DanishSentence) []gr
 		}
 		words = append(words, part.Ord.Representation(&part)...)
 	}
+	for _, adverbium := range sentence.Verb.Adverbier {
+		words = append(words, adverbium.Ord.Representation(&adverbium)...)
+	}
 	for _, part := range sentence.Other {
 		words = append(words, part.Forholdsord.Representation()...)
 		words = append(words, part.Ord.Ord.Representation(&part.Ord)...)
@@ -48,16 +51,33 @@ type SubstantivWord struct {
 }
 
 func (word SubstantivWord) Representation(ord *grammatics.Substantiv) []grammatics.WordRepresenter {
-	if ord.Bestemt {
-		if ord.Flertal {
-			return []grammatics.WordRepresenter{word.Forms["multibestemt"]}
-		}
-		return []grammatics.WordRepresenter{word.Forms["bestemt"]}
+	words := make([]grammatics.WordRepresenter, 0)
+	for _, ejer := range ord.Ejere {
+		words = append(words, ejer.Ord.Representation(&ejer)...)
 	}
-	if ord.Flertal {
-		return []grammatics.WordRepresenter{word.Forms["multi"]}
+	for _, adjektiv := range ord.Tillægsord {
+		words = append(words, adjektiv.Ord.Representation(&adjektiv)...)
 	}
-	return []grammatics.WordRepresenter{word.Forms["en"], word.Forms["ubestemt"]}
+	form := word.Forms["ubestemt"]
+	switch {
+	case !ord.Bestemt && !ord.Flertal:
+		form = word.Forms["ubestemt"]
+		words = append([]grammatics.WordRepresenter{word.Forms["en"]}, words...)
+	case ord.Bestemt && !ord.Flertal && len(ord.Ejere) == 0:
+		form = word.Forms["bestemt"]
+	case ord.Bestemt && !ord.Flertal && len(ord.Ejere) > 0:
+		form = word.Forms["ubestemt"]
+	case !ord.Bestemt && ord.Flertal:
+		form = word.Forms["multi"]
+	case ord.Bestemt && ord.Flertal && len(ord.Ejere) == 0:
+		form = word.Forms["multibestemt"]
+	case ord.Bestemt && ord.Flertal && len(ord.Ejere) > 0:
+		form = word.Forms["multi"]
+	}
+	if ord.Ejefald {
+		form.Word = form.Word + "s"
+	}
+	return append(words, form)
 }
 
 func NewSubstantivWord(en string, ubestemt string, bestemt string, multi string, multibestemt string) *SubstantivWord {

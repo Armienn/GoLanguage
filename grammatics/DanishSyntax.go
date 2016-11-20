@@ -40,7 +40,9 @@ type Substantiv struct {
 	Ord        SubstantivRepresenter
 	Flertal    bool
 	Bestemt    bool
+	Ejefald    bool
 	Tillægsord []Adjektiv
+	Ejere      []Substantiv
 }
 
 type Adjektiv struct {
@@ -127,6 +129,7 @@ func (language *Dansk) ParseSubstantiv(source *Statement) Substantiv {
 		substantiv.Ord = language.FindSubstantiv(source)
 	}
 	substantiv.Tillægsord = make([]Adjektiv, 0)
+	substantiv.Ejere = make([]Substantiv, 0)
 	for _, descriptor := range source.Descriptors {
 		descriptorType, addWords := SubstantivDescriptorType(descriptor)
 		switch descriptorType {
@@ -134,6 +137,10 @@ func (language *Dansk) ParseSubstantiv(source *Statement) Substantiv {
 			substantiv.Bestemt = true
 		case "multiple":
 			substantiv.Flertal = true
+		case "owner":
+			ejer := language.ParseSubstantiv(descriptor)
+			ejer.Ejefald = true
+			substantiv.Ejere = append(substantiv.Ejere, ejer)
 		}
 		if addWords {
 			substantiv.Tillægsord = append(substantiv.Tillægsord, language.ParseAdjektiv(descriptor))
@@ -143,6 +150,9 @@ func (language *Dansk) ParseSubstantiv(source *Statement) Substantiv {
 }
 
 func SubstantivDescriptorType(source *Statement) (string, bool) {
+	if source.Relation == "owner" {
+		return "owner", false
+	}
 	if source.Relation != "descriptor" || source.IsComplex() {
 		return "other", true
 	}
